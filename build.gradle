@@ -56,7 +56,6 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    provided group: "org.springframework.boot", name: "spring-boot-starter-data-jpa", version: "2.0.1.RELEASE"
     provided group: "org.springframework.boot", name: "spring-boot-starter-data-rest", version: "2.0.1.RELEASE"
     provided group: "org.springframework.boot", name: "spring-boot-devtools", version: "2.0.1.RELEASE"
     provided group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
