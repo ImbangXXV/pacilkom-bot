@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Bean;
 
 import com.pengrad.telegrambot.TelegramBot;
 
-import de.simonscholz.bot.telegram.translate.TranslationApi;
-import de.simonscholz.bot.telegram.weather.DmiApi;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -19,16 +17,6 @@ public class BotConfig {
 	public Retrofit retrofit() {
 		return new Retrofit.Builder().addConverterFactory(JacksonConverterFactory.create())
 				.addCallAdapterFactory(RxJava2CallAdapterFactory.create()).baseUrl(BASE_URL).build();
-	}
-
-	@Bean
-	public DmiApi dmiApi(Retrofit retrofit) {
-		return retrofit.create(DmiApi.class);
-	}
-
-	@Bean
-	public TranslationApi translationApi(Retrofit retrofit) {
-		return retrofit.create(TranslationApi.class);
 	}
 
 	@Bean
