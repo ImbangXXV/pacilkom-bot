@@ -1,0 +1,73 @@
+description = """
+Gradle build script for Pacilkom Bot.
+Adapted from Advanced Programming 2018 lab build.gradle
+"""
+
+// Project-wide constants
+ext.java_version = "1.8"
+ext.project_rootdir = project.rootDir.toString()
+
+// Use Java plugin
+apply plugin: "java"
+sourceCompatibility = java_version
+targetCompatibility = java_version
+
+// Use & configure Checkstyle plugin to check code writing style
+// Also known as "linter"
+apply plugin: "checkstyle"
+checkstyle {
+    configFile = file(new File("${project_rootdir}/config/google_csui_checks.xml"))
+    ignoreFailures = false
+}
+
+// Build dependencies
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: "org.springframework.boot", name: "spring-boot-gradle-plugin", version: "2.0.1.RELEASE"
+        classpath group: "org.jacoco", name: "org.jacoco.core", version: "0.8.1"
+        classpath group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
+    }
+}
+
+// Apply Spring framework plugin
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+jar {
+    baseName = "pacilkom-bot"
+    version =  "0.1.0"
+}
+
+// Apply jacoco for code coverage report
+apply plugin: "jacoco"
+
+// Dependencies for implementation
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation group: "org.json", name: "json", version: "20180130"
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-web", version: "2.0.1.RELEASE"
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-thymeleaf", version: "2.0.1.RELEASE"
+    implementation group: "org.springframework.boot", name: "spring-boot-devtools", version: "2.0.1.RELEASE"
+    implementation group: "org.springframework.boot", name: "spring-boot-starter-security", version: "2.0.1.RELEASE"
+    implementation group: "org.telegram", name: "telegrambots", version: "3.6.1"
+    implementation group: "org.projectlombok", name: "lombok", version: "0.10.1"
+    implementation group: "com.github.fzakaria", name: "ascii85", version: "1.1"
+
+    testImplementation group: "junit", name: "junit", version: "4.12"
+    testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version: "2.0.1.RELEASE"
+    testImplementation group: "com.jayway.jsonpath", name: "json-path", version: "2.4.0"
+    testImplementation group: "org.mockito", name: "mockito-core", version: "2.18.0"
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: "5.2.0-M1"
+
+    testRuntimeOnly group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.2.0-M1"
+    testRuntimeOnly group: "org.junit.platform", name: "junit-platform-launcher", version: "1.2.0-M1"
+    testRuntimeOnly group: "org.junit.vintage", name: "junit-vintage-engine", version: "5.2.0-M1"
+}
+
+// Add IDE-specific plugins
+apply plugin: "eclipse"
+apply plugin: "idea"

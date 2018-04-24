@@ -1,0 +1,17 @@
+# EditorConfig for Advanced Programming 2018 lab exercises
+root = true
+
+[*]
+charset = utf-8
+
+[*.{java, py}]
+indent_style = space
+indent_space = 4
+trim_trailing_whitespace = true
+
+[*.yml]
+indent_style = space
+indent_space = 2
+
+[*.md]
+trim_trailing_whitepace = false
