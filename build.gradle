@@ -18,6 +18,7 @@ apply plugin: "checkstyle"
 checkstyle {
     configFile = file(new File("${project_rootdir}/config/google_csui_checks.xml"))
     ignoreFailures = false
+    toolVersion = "8.8"
 }
 
 // Build dependencies
