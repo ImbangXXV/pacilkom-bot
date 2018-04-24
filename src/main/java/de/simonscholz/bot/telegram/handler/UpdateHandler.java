@@ -1,7 +1,10 @@
 package de.simonscholz.bot.telegram.handler;
 
-import com.pengrad.telegrambot.model.Update;
+import org.telegram.telegrambots.api.methods.BotApiMethod;
+import org.telegram.telegrambots.api.objects.Update;
+
+import java.io.Serializable;
 
 public interface UpdateHandler {
-	void handleUpdate(Update update);
+    BotApiMethod<? extends Serializable> handleUpdate(Update update);
 }

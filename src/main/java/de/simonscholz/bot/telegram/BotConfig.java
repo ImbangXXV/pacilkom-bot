@@ -1,27 +1,34 @@
  package de.simonscholz.bot.telegram;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import com.pengrad.telegrambot.TelegramBot;
-
 import org.springframework.context.annotation.Configuration;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-@Configuration
+ @Configuration
 public class BotConfig {
-	private static final String BASE_URL = "http://www.dmi.dk/Data4DmiDk/";
+ 	@Autowired
+	TelegramBotsApi api;
 
 	@Bean
-	public Retrofit retrofit() {
-		return new Retrofit.Builder().addConverterFactory(JacksonConverterFactory.create())
-				.addCallAdapterFactory(RxJava2CallAdapterFactory.create()).baseUrl(BASE_URL).build();
+	public TelegramBotsApi api() {
+		return new TelegramBotsApi();
 	}
 
 	@Bean
-	public TelegramBot telegramBot(BotProperties botProperties) {
-		return new TelegramBot(botProperties.getApiKey());
+	public TelegramWebhookBot telegramBot() {
+		TelegramWebhookBot bot = new PacilkomBot();
+
+		try{
+			api.registerBot(bot);
+		}catch(TelegramApiException e){
+			e.printStackTrace();
+		}
+
+		return bot;
 	}
 
 }

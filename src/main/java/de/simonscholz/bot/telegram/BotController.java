@@ -1,45 +1,25 @@
 package de.simonscholz.bot.telegram;
 
-import java.util.List;
-
-import com.pengrad.telegrambot.BotUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.GetUpdates;
-import com.pengrad.telegrambot.response.GetUpdatesResponse;
+import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import de.simonscholz.bot.telegram.handler.UpdateHandler;
+import java.util.List;
 
 @RestController
 public class BotController {
 
     @Autowired
-    private UpdateHandler handler;
-
-    @Autowired
-    private TelegramBot bot;
-
-    @RequestMapping("/poll")
-    public void poll() {
-        GetUpdates getUpdates = new GetUpdates().limit(100).offset(0).timeout(0);
-        GetUpdatesResponse getUpdatesResponse = bot.execute(getUpdates);
-
-        List<Update> updates = getUpdatesResponse.updates();
-        updates.forEach(this::runHandler);
-    }
+    private TelegramWebhookBot bot;
 
     @RequestMapping(value = "/webhook", method = RequestMethod.POST)
-    public void webhook(@RequestBody String update) {
-        handler.handleUpdate(BotUtils.parseUpdate(update));
-    }
-
-    public void runHandler(Update update) {
-        handler.handleUpdate(update);
+    public void webhook(@RequestBody Update update) throws TelegramApiException {
+        bot.execute(bot.onWebhookUpdateReceived(update));
     }
 }

@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.api.methods.BotApiMethod;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendMessage;
+import java.io.Serializable;
 
 @Component
 public class UpdateHandlerImpl implements UpdateHandler {
@@ -16,14 +19,14 @@ public class UpdateHandlerImpl implements UpdateHandler {
 	private Logger LOG = LoggerFactory.getLogger(UpdateHandlerImpl.class);
 
 	@Autowired
-	private TelegramBot telegramBot;
+	private TelegramWebhookBot telegramBot;
 
 	@Override
-	public void handleUpdate(Update update) {
-		Message message = update.message();
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
+		Message message = update.getMessage();
 
-		Long chatId = message.chat().id();
-		String text = message.text();
+		Long chatId = message.getChatId();
+		String text = message.getText();
 
 		LOG.debug("Chat id:" + chatId);
 		LOG.debug("Text : " + text);
@@ -35,10 +38,10 @@ public class UpdateHandlerImpl implements UpdateHandler {
 
 			if (text.startsWith("/hello")) {
                 SendMessage sendHello = new SendMessage(chatId, "Hello, this is your message: " + queryString);
-                telegramBot.execute(sendHello);
+                return sendHello;
             }
-
 		}
 
+        return null;
 	}
 }

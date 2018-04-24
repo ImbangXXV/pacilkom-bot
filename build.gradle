@@ -61,7 +61,7 @@ dependencies {
     provided group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
     provided group: "postgresql", name: "postgresql", version: "9.1-901.jdbc4"
 
-    implementation group: "com.github.pengrad", name: "java-telegram-bot-api", version: "3.6.0"
+    implementation group: "org.telegram", name: "telegrambots", version: "3.6.1"
     implementation group: "com.squareup.retrofit2", name: "retrofit", version: "2.4.0"
     implementation group: "com.squareup.retrofit2", name: "converter-jackson", version: "2.4.0"
     implementation group: "com.squareup.retrofit2", name: "adapter-rxjava2", version: "2.4.0"
