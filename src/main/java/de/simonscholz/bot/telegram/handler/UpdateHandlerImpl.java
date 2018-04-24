@@ -36,6 +36,7 @@ public class UpdateHandlerImpl implements UpdateHandler {
 
 	@Override
 	public void handleUpdate(Update update) {
+	    System.out.println(update);
 		Message message = update.message();
 
 		Long chatId = message.chat().id();
@@ -62,12 +63,15 @@ public class UpdateHandlerImpl implements UpdateHandler {
 					telegramBot.execute(sendTranslation);
 				});
 			} else if (text.startsWith("/en")) {
-				Single<Translation> translation = translationApi.getTranslation(queryString, "en", "de");
-				translation.subscribe(t -> {
-					SendMessage sendTranslation = new SendMessage(chatId, t.getTranslationText());
-					telegramBot.execute(sendTranslation);
-				});
-			}
+                Single<Translation> translation = translationApi.getTranslation(queryString, "en", "de");
+                translation.subscribe(t -> {
+                    SendMessage sendTranslation = new SendMessage(chatId, t.getTranslationText());
+                    telegramBot.execute(sendTranslation);
+                });
+            } else if (text.startsWith("/hello")) {
+                SendMessage sendHello = new SendMessage(chatId, "Hello, this is your message: " + queryString);
+                telegramBot.execute(sendHello);
+            }
 
 		}
 
