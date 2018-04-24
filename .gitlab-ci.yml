@@ -32,4 +32,4 @@ deploy:
     name: production
     url: $HEROKU_APP_HOST
   only:
-    - master@72pacil-chatbot/pacilkom-bot
+    - master
