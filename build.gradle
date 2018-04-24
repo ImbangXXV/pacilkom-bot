@@ -24,11 +24,14 @@ checkstyle {
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "http://repo.spring.io/plugins-release"
+        }
     }
     dependencies {
         classpath group: "org.springframework.boot", name: "spring-boot-gradle-plugin", version: "2.0.1.RELEASE"
         classpath group: "org.jacoco", name: "org.jacoco.core", version: "0.8.1"
-        classpath group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
+        classpath group: "io.spring.gradle", name: "propdeps-plugin", version: "0.0.9.RELEASE"
     }
 }
 
@@ -39,6 +42,10 @@ jar {
     baseName = "pacilkom-bot"
     version =  "0.1.0"
 }
+apply plugin: "propdeps"
+apply plugin: "propdeps-maven"
+apply plugin: "propdeps-idea"
+apply plugin: "propdeps-eclipse"
 
 // Apply jacoco for code coverage report
 apply plugin: "jacoco"
@@ -48,13 +55,18 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    provided group: "org.springframework.boot", name: "spring-boot-starter-data-jpa", version: "2.0.1.RELEASE"
+    provided group: "org.springframework.boot", name: "spring-boot-starter-data-rest", version: "2.0.1.RELEASE"
+    provided group: "org.springframework.boot", name: "spring-boot-devtools", version: "2.0.1.RELEASE"
+    provided group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
+    provided group: "postgresql", name: "postgresql", version:"9.1-901.jdbc4"
+
+    implementation group: "com.github.pengrad", name: "java-telegram-bot-api", version: "3.6.0"
+    implementation group: "com.squareup.retrofit2", name: "retrofit", version: "2.4.0"
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.4.0'
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.4.0'
+    implementation group: "org.jsoup", name: "jsoup", version: "1.11.3"
     implementation group: "org.json", name: "json", version: "20180130"
-    implementation group: "org.springframework.boot", name: "spring-boot-starter-web", version: "2.0.1.RELEASE"
-    implementation group: "org.springframework.boot", name: "spring-boot-starter-thymeleaf", version: "2.0.1.RELEASE"
-    implementation group: "org.springframework.boot", name: "spring-boot-devtools", version: "2.0.1.RELEASE"
-    implementation group: "org.springframework.boot", name: "spring-boot-starter-security", version: "2.0.1.RELEASE"
-    implementation group: "org.telegram", name: "telegrambots", version: "3.6.1"
-    implementation group: "org.projectlombok", name: "lombok", version: "0.10.1"
     implementation group: "com.github.fzakaria", name: "ascii85", version: "1.1"
 
     testImplementation group: "junit", name: "junit", version: "4.12"
@@ -71,3 +83,5 @@ dependencies {
 // Add IDE-specific plugins
 apply plugin: "eclipse"
 apply plugin: "idea"
+
+compileJava.dependsOn(processResources)
