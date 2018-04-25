@@ -10,6 +10,8 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
+import com.pacilkom.feats.scele.latestTime.TimeScrapper;
+
 import java.io.Serializable;
 
 @Component
@@ -39,7 +41,7 @@ public class UpdateHandler {
                 SendMessage sendHello = new SendMessage(chatId, "Hello, this is your message: " + queryString);
                 return sendHello;
             } else if (text.startsWith("/getTime")) {
-                SendMessage sendTime = new SendMessage(chatId, "time scele : " + Scrapper.getInstance().getTime());
+                SendMessage sendTime = new SendMessage(chatId, "time scele : " + TimeScrapper.getTime());
                 return sendTime;
             }
 		}

@@ -1,4 +1,4 @@
-package com.pacilkom.bot;
+package com.pacilkom.feats.scele;
 
 import java.io.IOException;
 
@@ -11,10 +11,14 @@ public class Scrapper {
     
     private static Scrapper instance = null;
     private Document scele;
-    private final String url = "http://scele.cs.ui.ac.id";
+    private final static String SCELE_LINK = "http://scele.cs.ui.ac.id";
     
     private Scrapper() {
-        
+        try {
+            scele = Jsoup.connect(SCELE_LINK).get();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
     
     public static Scrapper getInstance() {
@@ -24,7 +28,7 @@ public class Scrapper {
          return instance;
     }
     
-    public String getTime() {
-        return scele.selectFirst("input#block_progress_serverTime").text();
+    public Document getDocument() {
+        return scele;
     }
 }
