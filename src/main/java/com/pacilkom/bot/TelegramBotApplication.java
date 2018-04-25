@@ -1,4 +1,4 @@
-package de.simonscholz.bot.telegram;
+package com.pacilkom.bot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

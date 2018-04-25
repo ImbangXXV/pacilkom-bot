@@ -1,4 +1,4 @@
-package de.simonscholz.bot.telegram.handler;
+package com.pacilkom.bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,19 +9,17 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.Serializable;
 
 @Component
-public class UpdateHandlerImpl implements UpdateHandler {
+public class UpdateHandler {
 
-	private Logger LOG = LoggerFactory.getLogger(UpdateHandlerImpl.class);
+	private Logger LOG = LoggerFactory.getLogger(UpdateHandler.class);
 
 	@Autowired
 	private TelegramWebhookBot telegramBot;
 
-	@Override
 	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
 		Message message = update.getMessage();
 

@@ -1,6 +1,5 @@
-package de.simonscholz.bot.telegram;
+package com.pacilkom.bot;
 
-import de.simonscholz.bot.telegram.handler.UpdateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.objects.Update;
