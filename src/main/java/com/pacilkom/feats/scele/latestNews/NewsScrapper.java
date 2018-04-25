@@ -13,9 +13,9 @@ public class NewsScrapper {
 
     public static final String SCELE_LINK = "https://scele.cs.ui.ac.id/";
 
-    public static List<String> getNews() throws IOException {
+    public static List<Hyperlink> getNews() throws IOException {
         Document doc = Jsoup.connect(SCELE_LINK).get();
-        List<String> messages = new LinkedList<>();
+        List<Hyperlink> messages = new LinkedList<>();
         Elements block = doc.select("div#site-news-forum");
         for (Element el : block.select("div.forumpost")) {
             Elements text = el.select("div.topic");
@@ -25,7 +25,7 @@ public class NewsScrapper {
                     .select("div.options")
                     .select("div.link")
                     .select("a").attr("href");
-            messages.add("[" + title + " " + author+ "](" + link + ")");
+            messages.add(new Hyperlink(title + " " + author, link));
         }
         return messages;
     }
