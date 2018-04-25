@@ -1,14 +1,10 @@
 package com.pacilkom.bot;
 
-import com.pacilkom.feats.interfaces.AuthBotCommand;
-import com.pacilkom.feats.interfaces.BotCommand;
-import com.pacilkom.feats.interfaces.ParamBotCommand;
-import com.pacilkom.feats.interfaces.ParamWithAuthBotCommand;
-import com.pacilkom.feats.example.HelloCommand;
-import com.pacilkom.feats.login.LoginCommand;
-import com.pacilkom.feats.login.LogoutCommand;
-import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
-import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
+import com.pacilkom.bot.commands.BasicCommands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -33,23 +29,22 @@ public class UpdateHandler {
 	    registerParamWithAuthCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update)
-            throws Exception {
-		String text;
-		Long chatId;
-		Integer userId;
 
-		if (update.hasCallbackQuery()) {
-            CallbackQuery message = update.getCallbackQuery();
-            text = message.getData();
-            chatId = message.getMessage().getChatId();
-            userId = message.getFrom().getId();
-        } else {
-            Message message = update.getMessage();
-            text = message.getText().trim();
-            chatId = message.getChatId();
-            userId = message.getFrom().getId();
-        }
+	@Autowired
+	private TelegramWebhookBot telegramBot;
+
+    public UpdateHandler() {
+
+    }
+
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
+		Message message = update.getMessage();
+
+		Long chatId = message.getChatId();
+		String text = message.getText();
+
+		LOG.debug("Chat id:" + chatId);
+		LOG.debug("Text : " + text);
 
 		int indexOf = text.indexOf(" ");
 
@@ -57,38 +52,28 @@ public class UpdateHandler {
 		    String commandString = text.substring(0, indexOf);
 			String queryString = text.substring(indexOf+1);
 
-			if (paramCommandMap.containsKey(commandString)) {
-                return paramCommandMap.get(commandString).execute(chatId, queryString);
-            } else if (paramWithAuthCommandMap.containsKey(commandString)) {
-				return paramWithAuthCommandMap.get(commandString)
-						.execute(chatId, userId, queryString);
-			}
-		} else if (commandMap.containsKey(text)) {
-		    return commandMap.get(text).execute(chatId);
-        } else if (authCommandMap.containsKey(text)) {
-			return authCommandMap.get(text).execute(chatId, userId);
+			if (text.startsWith("/hello")) {
+                return BasicCommands.getInstance().hello(chatId, queryString);
+            } else if (text.startsWith("/help")) {
+                return BasicCommands.getInstance().help(chatId);
+            } else if (text.startsWith("/about")) {
+                return BasicCommands.getInstance().about(chatId);
+            } else if (text.startsWith("/")) {
+			    // if received command is invalid
+                SendMessage sendHello = new SendMessage(chatId, "Hmm");
+                return sendHello;
+            } else {
+			    // if received no comand
+                return processMessage(chatId,text);
+            }
 		}
         return null;
 	}
 
-	private void registerCommands() {
-	    commandMap = new HashMap<>();
-	    commandMap.put("/news", new SceleNewsCommand());
-	    commandMap.put("/time", new SceleTimeCommand());
+    private BotApiMethod<? extends Serializable> processMessage(Long chatId, String text) {
+        if (text.toLowerCase().contains("hello")) {
+
+        }
+	    return null;
     }
-
-	private void registerAuthCommands() {
-		authCommandMap = new HashMap<>();
-		authCommandMap.put("/login", new LoginCommand());
-		authCommandMap.put("/logout", new LogoutCommand());
-	}
-
-    private void registerParamCommands() {
-	    paramCommandMap = new HashMap<>();
-	    paramCommandMap.put("/hello", new HelloCommand());
-    }
-
-	private void registerParamWithAuthCommands() {
-		paramWithAuthCommandMap = new HashMap<>();
-	}
 }
