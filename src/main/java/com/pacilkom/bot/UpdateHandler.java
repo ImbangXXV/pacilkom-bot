@@ -16,10 +16,11 @@ import java.io.Serializable;
 public class UpdateHandler {
 
 	private Logger LOG = LoggerFactory.getLogger(UpdateHandler.class);
-
+	
 	@Autowired
 	private TelegramWebhookBot telegramBot;
-
+	
+	
 	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
 		Message message = update.getMessage();
 
@@ -37,9 +38,14 @@ public class UpdateHandler {
 			if (text.startsWith("/hello")) {
                 SendMessage sendHello = new SendMessage(chatId, "Hello, this is your message: " + queryString);
                 return sendHello;
+            } else if (text.startsWith("/getTime")) {
+                SendMessage sendTime = new SendMessage(chatId, "time scele : " + Scrapper.getInstance().getTime());
+                return sendTime;
             }
 		}
 
         return null;
 	}
+	
+	
 }
