@@ -19,8 +19,13 @@ public class NewsScrapper {
             Elements text = el.select("div.topic");
             String title = text.select("div.subject").text();
             String author = text.select("div.author").text();
-            messages.add(title + " " + author + "\n");
+            String link = el.select("div.row.side")
+                    .select("div.options")
+                    .select("div.link")
+                    .select("a").attr("href");
+            messages.add("[" + title + " " + author+ "](" + link + ")");
         }
         return messages;
     }
+
 }
