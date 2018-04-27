@@ -16,7 +16,11 @@ public class PacilkomBot extends TelegramWebhookBot {
     @Override
     public BotApiMethod onWebhookUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            return handler.handleUpdate(update);
+            try {
+                return handler.handleUpdate(update);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

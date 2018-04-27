@@ -14,6 +14,8 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
+import com.pacilkom.feats.scele.latestTime.TimeScrapper;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class UpdateHandler {
     }
 
 	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
+
 		Message message = update.getMessage();
 
 		Long chatId = message.getChatId();
@@ -66,5 +69,4 @@ public class UpdateHandler {
 	    paramCommandMap = new HashMap<>();
 	    paramCommandMap.put("/hello", new HelloCommand());
     }
-
 }

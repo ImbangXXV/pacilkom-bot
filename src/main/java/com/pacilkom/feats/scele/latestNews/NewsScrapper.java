@@ -1,5 +1,6 @@
 package com.pacilkom.feats.scele.latestNews;
 
+import com.pacilkom.feats.scele.Scrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,9 +15,9 @@ public class NewsScrapper {
     public static final String SCELE_LINK = "https://scele.cs.ui.ac.id/";
 
     public static List<Hyperlink> getNews() throws IOException {
-        Document doc = Jsoup.connect(SCELE_LINK).get();
         List<Hyperlink> messages = new LinkedList<>();
-        Elements block = doc.select("div#site-news-forum");
+        Elements block = Scrapper.getInstance().getDocument()
+                .select("div#site-news-forum");
         for (Element el : block.select("div.forumpost")) {
             Elements text = el.select("div.topic");
             String title = text.select("div.subject").text();
