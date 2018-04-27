@@ -22,13 +22,13 @@ public class SceleNewsCommandTest {
 
     @Test
     public void hasCorrectNumberOfNews() {
-       String[] news = msg.getText().split("\n");
+       String[] news = msg.getText().split("\n\n");
        assertEquals(titles.size(), news.length);
     }
 
     @Test
     public void checkTheReplyIsCorrect() {
-        String[] news = msg.getText().split("\n");
+        String[] news = msg.getText().split("\n\n");
         int pointer = 0;
         for (Hyperlink title : titles) {
             assertTrue(news[pointer].equals(title.toString()));
