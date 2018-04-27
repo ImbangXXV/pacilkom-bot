@@ -4,6 +4,7 @@ import com.pacilkom.feats.BotCommand;
 import com.pacilkom.feats.ParamBotCommand;
 import com.pacilkom.feats.example.HelloCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
+import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class UpdateHandler {
 	private void registerCommands() {
 	    commandMap = new HashMap<>();
 	    commandMap.put("/news", new SceleNewsCommand());
+	    commandMap.put("/time", new SceleTimeCommand());
     }
 
     private void registerParamCommands() {
