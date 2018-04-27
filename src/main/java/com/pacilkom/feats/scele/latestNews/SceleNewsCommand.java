@@ -12,6 +12,7 @@ public class SceleNewsCommand implements BotCommand {
                 NewsScrapper.getNews()
                         .stream()
                         .map(n -> n.toString())
-                        .collect(Collectors.joining("\n")));
+                        .collect(Collectors.joining("\n")))
+                .enableMarkdown(true);
     }
 }

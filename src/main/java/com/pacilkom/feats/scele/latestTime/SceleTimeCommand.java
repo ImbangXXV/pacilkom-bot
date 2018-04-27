@@ -7,8 +7,6 @@ public class SceleTimeCommand implements BotCommand {
 
     @Override
     public SendMessage execute(Long chatId) throws Exception {
-        SendMessage reply = new SendMessage(chatId, TimeScrapper.getTime());
-        reply.enableMarkdown(true);
-        return reply;
+        return new SendMessage(chatId, TimeScrapper.getTime());
     }
 }
