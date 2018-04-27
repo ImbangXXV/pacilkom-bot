@@ -12,6 +12,7 @@ public class TimeGetter {
 
     private static final String TIME_SERVER = "ntp.ui.ac.id";  
 
+  
     
     public static String getTime() {
         return timeLookup();
