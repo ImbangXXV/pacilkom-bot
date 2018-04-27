@@ -1,30 +1,19 @@
 package com.pacilkom.bot;
 
 import com.pacilkom.feats.BotCommand;
-<<<<<<< HEAD
-import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
-=======
 import com.pacilkom.feats.ParamBotCommand;
 import com.pacilkom.feats.example.HelloCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
->>>>>>> latest-news
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
-<<<<<<< HEAD
-import java.io.IOException;
-=======
-import com.pacilkom.feats.scele.latestTime.TimeScrapper;
-
->>>>>>> latest-news
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
