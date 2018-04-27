@@ -1,7 +1,14 @@
 package com.pacilkom.bot;
 
 import com.pacilkom.feats.BotCommand;
+<<<<<<< HEAD
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
+=======
+import com.pacilkom.feats.ParamBotCommand;
+import com.pacilkom.feats.example.HelloCommand;
+import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
+import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
+>>>>>>> latest-news
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +19,12 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
+<<<<<<< HEAD
 import java.io.IOException;
+=======
+import com.pacilkom.feats.scele.latestTime.TimeScrapper;
+
+>>>>>>> latest-news
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,18 +37,20 @@ public class UpdateHandler {
 	@Autowired
 	private TelegramWebhookBot telegramBot;
 
-	private Map<String, BotCommand> commands;
+	private Map<String, BotCommand> commandMap;
+	private Map<String, ParamBotCommand> paramCommandMap;
 
 	public UpdateHandler() {
-	    commands = new HashMap<>();
-	    commands.put("/news", new SceleNewsCommand());
+	    registerCommands();
+	    registerParamCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws IOException {
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
+
 		Message message = update.getMessage();
 
 		Long chatId = message.getChatId();
-		String text = message.getText();
+		String text = message.getText().trim();
 
 		LOG.debug("Chat id:" + chatId);
 		LOG.debug("Text : " + text);
@@ -44,17 +58,26 @@ public class UpdateHandler {
 		int indexOf = text.indexOf(" ");
 
 		if (indexOf > -1) {
-		    String command = text.substring(0, indexOf);
+
+		    String commandString = text.substring(0, indexOf);
 			String queryString = text.substring(indexOf+1);
-
-			if (text.startsWith("/hello")) {
-                SendMessage sendHello = new SendMessage(chatId, "Hello, this is your message: " + queryString);
-                return sendHello;
-            } else if (commands.containsKey(command)) {
-			    return commands.get(command).execute(chatId);
+			if (paramCommandMap.containsKey(commandString)) {
+                return paramCommandMap.get(commandString).execute(chatId, queryString);
             }
-		}
-
+		} else if (commandMap.containsKey(text)) {
+		    return commandMap.get(text).execute(chatId);
+        }
         return null;
 	}
+
+	private void registerCommands() {
+	    commandMap = new HashMap<>();
+	    commandMap.put("/news", new SceleNewsCommand());
+	    commandMap.put("/time", new SceleTimeCommand());
+    }
+
+    private void registerParamCommands() {
+	    paramCommandMap = new HashMap<>();
+	    paramCommandMap.put("/hello", new HelloCommand());
+    }
 }
