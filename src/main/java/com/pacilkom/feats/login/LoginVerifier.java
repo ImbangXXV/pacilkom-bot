@@ -1,5 +1,6 @@
 package com.pacilkom.feats.login;
 
+import com.pacilkom.csuilogin.SessionDatabase;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -11,11 +12,8 @@ public class LoginVerifier {
     private static final String CLIENT_ID = "X3zNkFmepkdA47ASNMDZRX3Z9gqSU1Lwywu5WepG";
 
     public static String verify(int userId) {
-        // Minta database
-        String accessToken = "";
-
-        // Verifikasi ke CSUI
         try {
+            String accessToken = SessionDatabase.getInstance().getAccessToken(userId);
             return getUserData(accessToken).getString("username");
         } catch (Exception e) {
             return null;
