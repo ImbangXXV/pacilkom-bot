@@ -17,8 +17,10 @@ public class SessionDatabase {
             Class.forName("org.postgresql.Driver");
 
             c = DriverManager.getConnection(DATABASE_URI, DATABASE_USER, DATABASE_PASSWORD);
-            if (!isTableExists()) {
+            try {
                 createBotUserTable();
+            } catch (SQLException e) {
+                System.out.println("Skipping create table because it already exists.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -27,15 +29,6 @@ public class SessionDatabase {
 
     public static SessionDatabase getInstance() {
         return instance;
-    }
-
-    private boolean isTableExists() throws SQLException {
-        DatabaseMetaData meta = c.getMetaData();
-        ResultSet tables = meta.getTables(null, null, "BOT_USER", null);
-        boolean result = tables.next();
-
-        tables.close();
-        return result;
     }
 
     private void createBotUserTable() throws SQLException {
@@ -52,7 +45,7 @@ public class SessionDatabase {
         String query;
         if (getAccessToken(user_id) == null) {
             // use INSERT
-            query = "INSERT INTO BOT_USER (id_user, access_token)\n"
+            query = "INSERT INTO BOT_USER (user_id, access_token)\n"
                     + "VALUES ('" + user_id + "', '" + access_token + "');";
         } else {
             // use UPDATE

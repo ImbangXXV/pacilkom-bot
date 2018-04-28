@@ -28,14 +28,14 @@ public class LoginCommand implements ParamBotCommand {
                     "Kamu sudah login dengan akun CSUI: " + userName);
         } else {
             SendMessage message = new SendMessage(chatId,
-                    "Kamu belum login dengan akun CSUI. Silahkan login melalui tombol"
+                    "Kamu belum login dengan akun CSUI. Silahkan login melalui tombol "
                             + "login berikut!");
             InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
             List<InlineKeyboardButton> rowInline = new ArrayList<>();
             rowInline.add(new InlineKeyboardButton()
                     .setText("Login with CSUI account")
-                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/"));
+                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/?user_id=" + userId));
             // Set the keyboard to the markup
             rowsInline.add(rowInline);
             // Add it to the message
