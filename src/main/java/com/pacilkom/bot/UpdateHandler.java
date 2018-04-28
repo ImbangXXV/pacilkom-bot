@@ -50,7 +50,7 @@ public class UpdateHandler {
             }
 		} else if (commandMap.containsKey(text)) {
 		    return commandMap.get(text).execute(chatId);
-        } else if (text == "/login") {
+        } else if (text.equals("/login")) {
 			String userId = message.getFrom().getId().toString();
 			return LoginCommand.getInstance().execute(chatId, userId);
 		}

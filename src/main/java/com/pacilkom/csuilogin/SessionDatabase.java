@@ -5,9 +5,9 @@ import java.sql.*;
 public class SessionDatabase {
     private static SessionDatabase instance = new SessionDatabase();
     private Connection c;
-    private static final String DATABASE_URI = "postgres://giibaqgklxangd:1019e764e"
-            + "b3232833c55a4acca089f9f214af13bfba09b591573aec9c70eddb8@ec2-54-"
-            + "75-239-237.eu-west-1.compute.amazonaws.com:5432/d78hijtf1urdja";
+    private static final String DATABASE_URI = "jdbc:postgresql://ec2-54-75-239-237"
+            + ".eu-west-1.compute.amazonaws.com:5432/d78hijtf1urdja?sslmode=require&ssl=true&"
+            + "sslfactory=org.postgresql.ssl.NonValidatingFactory";
     private static final String DATABASE_USER = "giibaqgklxangd";
     private static final String DATABASE_PASSWORD = "1019e764eb3232833c55a4acca089f9f"
             + "214af13bfba09b591573aec9c70eddb8";
@@ -15,9 +15,10 @@ public class SessionDatabase {
     private SessionDatabase() {
         try {
             Class.forName("org.postgresql.Driver");
+
             c = DriverManager.getConnection(DATABASE_URI, DATABASE_USER, DATABASE_PASSWORD);
             if (!isTableExists()) {
-
+                createBotUserTable();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,7 +41,7 @@ public class SessionDatabase {
     private void createBotUserTable() throws SQLException {
         Statement stmt = c.createStatement();
         String query = "CREATE TABLE BOT_USER(\n"
-                + "user_id INT PRIMARY KEY NOT NULL\n"
+                + "user_id INT PRIMARY KEY NOT NULL,\n"
                 + "access_token TEXT NOT NULL)";
         stmt.executeUpdate(query);
         stmt.close();
@@ -52,11 +53,11 @@ public class SessionDatabase {
         if (getAccessToken(user_id) == null) {
             // use INSERT
             query = "INSERT INTO BOT_USER (id_user, access_token)\n"
-                    + "VALUES ('" + user_id + "', '" + access_token + "')";
+                    + "VALUES ('" + user_id + "', '" + access_token + "');";
         } else {
             // use UPDATE
             query = "UPDATE BOT_USER SET access_token = '" + access_token + "'\n"
-                    + "WHERE user_id = '" + user_id + "'";
+                    + "WHERE user_id = '" + user_id + "';";
         }
 
         stmt.executeUpdate(query);
@@ -67,7 +68,7 @@ public class SessionDatabase {
         Statement stmt = c.createStatement();
         String query = "SELECT access_token"
                 + "FROM BOT_USER"
-                + "WHERE user_id = '" + user_id + "'";
+                + "WHERE user_id = '" + user_id + "';";
 
         ResultSet rs = stmt.executeQuery(query);
         // sudah pasti yang pertama
