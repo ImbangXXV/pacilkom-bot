@@ -3,6 +3,7 @@ package com.pacilkom.bot;
 import com.pacilkom.feats.BotCommand;
 import com.pacilkom.feats.ParamBotCommand;
 import com.pacilkom.feats.example.HelloCommand;
+import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
 import org.slf4j.Logger;
@@ -22,9 +23,6 @@ import java.util.Map;
 public class UpdateHandler {
 
 	private Logger LOG = LoggerFactory.getLogger(UpdateHandler.class);
-
-	@Autowired
-	private TelegramWebhookBot telegramBot;
 
 	private Map<String, BotCommand> commandMap;
 	private Map<String, ParamBotCommand> paramCommandMap;
@@ -47,7 +45,6 @@ public class UpdateHandler {
 		int indexOf = text.indexOf(" ");
 
 		if (indexOf > -1) {
-
 		    String commandString = text.substring(0, indexOf);
 			String queryString = text.substring(indexOf+1);
 			if (paramCommandMap.containsKey(commandString)) {
@@ -55,7 +52,10 @@ public class UpdateHandler {
             }
 		} else if (commandMap.containsKey(text)) {
 		    return commandMap.get(text).execute(chatId);
-        }
+        } else if (text == "/login") {
+			String userId = message.getFrom().getId().toString();
+			return LoginCommand.getInstance().execute(chatId, userId);
+		}
         return null;
 	}
 
