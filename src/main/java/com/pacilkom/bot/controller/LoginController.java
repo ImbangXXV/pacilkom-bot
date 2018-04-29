@@ -28,13 +28,13 @@ public class LoginController {
     @Autowired
     private TelegramWebhookBot bot;
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/csui-login", method = RequestMethod.GET)
     public String loginPage(@RequestParam("id") int user_id, Model model) {
         model.addAttribute("id", user_id);
         return "login-page";
     }
 
-    @RequestMapping(value = "/login/get-session", method = RequestMethod.POST)
+    @RequestMapping(value = "/csui-login/get-session", method = RequestMethod.POST)
     public String loginConfirm(@RequestParam("id") int user_id,
                         @RequestParam("username") String username,
                         @RequestParam("password") String password, Model model) {
