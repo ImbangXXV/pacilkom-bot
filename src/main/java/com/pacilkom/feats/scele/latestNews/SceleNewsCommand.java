@@ -1,6 +1,6 @@
 package com.pacilkom.feats.scele.latestNews;
 
-import com.pacilkom.feats.BotCommand;
+import com.pacilkom.feats.interfaces.BotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 
 import java.util.stream.Collectors;
