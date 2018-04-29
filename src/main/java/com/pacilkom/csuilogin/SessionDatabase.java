@@ -57,9 +57,16 @@ public class SessionDatabase {
         stmt.close();
     }
 
+    public void deleteSession(int user_id) throws SQLException {
+        Statement stmt = c.createStatement();
+        String query = "DELETE FROM BOT_USER WHERE user_id = " + user_id + ";";
+        stmt.executeUpdate(query);
+        stmt.close();
+    }
+
     public String getAccessToken(int user_id) throws SQLException {
         Statement stmt = c.createStatement();
-        String query = "SELECT *\n"
+        String query = "SELECT access_token\n"
                 + "FROM BOT_USER\n"
                 + "WHERE user_id = " + user_id + ";";
 
