@@ -1,4 +1,4 @@
-package com.pacilkom.bot;
+package com.pacilkom.bot.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-
-import java.util.List;
 
 @RestController
 public class BotController {

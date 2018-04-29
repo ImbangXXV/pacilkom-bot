@@ -46,11 +46,11 @@ public class SessionDatabase {
         if (getAccessToken(user_id) == null) {
             // use INSERT
             query = "INSERT INTO BOT_USER (user_id, access_token)\n"
-                    + "VALUES ('" + user_id + "', '" + access_token + "');";
+                    + "VALUES (" + user_id + ", '" + access_token + "');";
         } else {
             // use UPDATE
             query = "UPDATE BOT_USER SET access_token = '" + access_token + "'\n"
-                    + "WHERE user_id = '" + user_id + "';";
+                    + "WHERE user_id = " + user_id + ";";
         }
 
         stmt.executeUpdate(query);
@@ -59,9 +59,9 @@ public class SessionDatabase {
 
     public String getAccessToken(int user_id) throws SQLException {
         Statement stmt = c.createStatement();
-        String query = "SELECT access_token"
-                + "FROM BOT_USER"
-                + "WHERE user_id = '" + user_id + "';";
+        String query = "SELECT *\n"
+                + "FROM BOT_USER\n"
+                + "WHERE user_id = " + user_id + ";";
 
         ResultSet rs = stmt.executeQuery(query);
         // sudah pasti yang pertama

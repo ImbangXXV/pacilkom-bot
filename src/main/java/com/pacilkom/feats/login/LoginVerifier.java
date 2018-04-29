@@ -22,7 +22,7 @@ public class LoginVerifier {
 
     private static JSONObject getUserData(String accessToken) throws Exception {
         String result = "";
-        URL url = new URL("http://akun.cs.ui.ac.id/oauth/token/verify/?access_token-"
+        URL url = new URL("http://akun.cs.ui.ac.id/oauth/token/verify/?access_token="
                 + accessToken + "&client_id=" + CLIENT_ID);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

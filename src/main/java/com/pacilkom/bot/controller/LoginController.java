@@ -1,5 +1,7 @@
-package com.pacilkom.csuilogin;
+package com.pacilkom.bot.controller;
 
+import com.pacilkom.csuilogin.SessionDatabase;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,6 +18,7 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.springframework.ui.Model;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,26 +28,30 @@ public class LoginController {
     @Autowired
     private TelegramWebhookBot bot;
 
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam("id") int user_id, Model model) {
+        model.addAttribute("id", user_id);
         return "login-page";
     }
 
-    @PostMapping("/login/get-session")
-    public void loginConfirm(@RequestParam("id") int user_id,
+    @RequestMapping(value = "/login/get-session", method = RequestMethod.POST)
+    public String loginConfirm(@RequestParam("id") int user_id,
                         @RequestParam("username") String username,
-                        @RequestParam("password") String password) {
-        String access_token = null;
+                        @RequestParam("password") String password, Model model) {
+        String access_token;
         try {
+            model.addAttribute("id", user_id);
             access_token = getAccessToken(username, password);
             if (access_token != null) {
                 SessionDatabase.getInstance().createSession(user_id, access_token);
-                // show success html "you can close this window"
+                model.addAttribute("success", true);
+                return "login-confirm";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // redirect back to /login
         }
+        model.addAttribute("success", false);
+        return "login-confirm";
     }
 
     private String getAccessToken(String username, String password) throws Exception {
@@ -55,6 +62,7 @@ public class LoginController {
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("username", username));
         params.add(new BasicNameValuePair("password", password));
+        params.add(new BasicNameValuePair("grant_type", "password"));
 
         String auth = "Basic WDN6TmtGbWVwa2RBNDdBU05NRFpSWDNaOWdxU1UxTHd5d3U1V2Vw"
                 + "RzpCRVFXQW43RDl6a2k3NEZ0bkNpWVhIRk50Ymg3eXlNWmFuNnlvMU1uaUdSVW"
@@ -73,7 +81,8 @@ public class LoginController {
         if (entity != null) {
             InputStream instream = entity.getContent();
             try {
-                JSONObject result = new JSONObject(instream.toString());
+                String strResult = IOUtils.toString(instream, StandardCharsets.UTF_8);
+                JSONObject result = new JSONObject(strResult);
                 access_token = result.getString("access_token");
             } finally {
                 instream.close();
