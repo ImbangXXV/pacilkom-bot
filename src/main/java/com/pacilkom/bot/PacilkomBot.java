@@ -6,7 +6,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
 public class PacilkomBot extends TelegramWebhookBot {
-    private static final String USERNAME = "pacilkom-bot";
+    private static final String USERNAME = "pacilkom_bot";
     private static final String API_KEY_ORI = "531440373:AAHKnxwbUIG0D1DlwDGxRqQIsoZ0efX0cVs";
     private static final String PATH = "https://pacilkom-bot.herokuapp.com/webhook";
 
@@ -15,7 +15,7 @@ public class PacilkomBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod onWebhookUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if ((update.hasMessage() && update.getMessage().hasText()) || update.hasCallbackQuery()) {
             try {
                 return handler.handleUpdate(update);
             } catch (Exception e) {

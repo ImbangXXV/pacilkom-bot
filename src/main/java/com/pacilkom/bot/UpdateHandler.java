@@ -37,13 +37,20 @@ public class UpdateHandler {
 	    registerParamWithAuthCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update)
+            throws Exception {
 
 		Message message = update.getMessage();
 
 		Long chatId = message.getChatId();
 		Integer userId = message.getFrom().getId();
-		String text = message.getText().trim();
+		String text;
+		if (update.hasCallbackQuery()) {
+            text = update.getCallbackQuery().getData();
+            System.out.println("hehe");
+        } else {
+            text = message.getText().trim();
+        }
 
 		LOG.debug("Chat id:" + chatId);
 		LOG.debug("Text : " + text);
