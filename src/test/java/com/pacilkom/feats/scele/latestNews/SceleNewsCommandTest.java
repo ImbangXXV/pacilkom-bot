@@ -21,7 +21,8 @@ public class SceleNewsCommandTest {
     public void setUp() throws Exception {
         msg = new SceleNewsCommand().execute(chatId);
         titles = NewsScrapper.getNews();
-        news = ((InlineKeyboardMarkup) msg.getReplyMarkup()).getKeyboard();
+        news = ((InlineKeyboardMarkup) msg
+                .getReplyMarkup()).getKeyboard();
     }
 
     @Test
@@ -34,8 +35,10 @@ public class SceleNewsCommandTest {
     public void checkTheReplyIsCorrect() {
         int pointer = 0;
         for (List<InlineKeyboardButton> bubble : news) {
-            assertTrue(titles.get(pointer).getContent().equals(bubble.get(0).getText()));
-            assertTrue(titles.get(pointer).getLink().equals(bubble.get(0).getUrl()));
+            assertTrue(titles.get(pointer)
+                    .getContent().equals(bubble.get(0).getText()));
+            assertTrue(titles.get(pointer)
+                    .getLink().equals(bubble.get(0).getUrl()));
             pointer++;
         }
     }
