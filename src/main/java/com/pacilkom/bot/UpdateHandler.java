@@ -9,10 +9,9 @@ import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.login.LogoutCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 
@@ -22,9 +21,6 @@ import java.util.Map;
 
 @Component
 public class UpdateHandler {
-
-	private Logger LOG = LoggerFactory.getLogger(UpdateHandler.class);
-
 	private Map<String, BotCommand> commandMap;
 	private Map<String, AuthBotCommand> authCommandMap;
 	private Map<String, ParamBotCommand> paramCommandMap;
@@ -37,16 +33,23 @@ public class UpdateHandler {
 	    registerParamWithAuthCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update)
+            throws Exception {
+		String text;
+		Long chatId;
+		Integer userId;
 
-		Message message = update.getMessage();
-
-		Long chatId = message.getChatId();
-		Integer userId = message.getFrom().getId();
-		String text = message.getText().trim();
-
-		LOG.debug("Chat id:" + chatId);
-		LOG.debug("Text : " + text);
+		if (update.hasCallbackQuery()) {
+            CallbackQuery message = update.getCallbackQuery();
+            text = message.getData();
+            chatId = message.getMessage().getChatId();
+            userId = message.getFrom().getId();
+        } else {
+            Message message = update.getMessage();
+            text = message.getText().trim();
+            chatId = message.getChatId();
+            userId = message.getFrom().getId();
+        }
 
 		int indexOf = text.indexOf(" ");
 
