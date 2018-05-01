@@ -14,6 +14,7 @@ import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -71,7 +72,7 @@ public class UpdateHandler {
         } else if (authCommandMap.containsKey(text)) {
 			return authCommandMap.get(text).execute(chatId, userId);
 		}
-        return null;
+        return new SendMessage(chatId, "Command not available. Use /help for more info.");
 	}
 
 	private void registerCommands() {
