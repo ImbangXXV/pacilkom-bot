@@ -1,5 +1,8 @@
 package com.pacilkom.bot;
 
+import com.pacilkom.feats.example.AboutCommand;
+import com.pacilkom.feats.example.HelpCommand;
+import com.pacilkom.feats.example.StartCommand;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.BotCommand;
 import com.pacilkom.feats.interfaces.ParamBotCommand;
@@ -73,6 +76,9 @@ public class UpdateHandler {
 
 	private void registerCommands() {
 	    commandMap = new HashMap<>();
+		commandMap.put("/start", new StartCommand());
+		commandMap.put("/about", new AboutCommand());
+		commandMap.put("/help", new HelpCommand());
 	    commandMap.put("/news", new SceleNewsCommand());
 	    commandMap.put("/time", new SceleTimeCommand());
     }
