@@ -7,18 +7,19 @@ import java.util.Date;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 
+
 public class TimeGetter {
 
-    private static final String TIME_SERVER = "ntp.ui.ac.id";
+    private static final String TIME_SERVER = "ntp.ui.ac.id";  
 
-
-
+  
+    
     public static String getTime() {
         return timeLookup();
     }
-
+ 
     private static String timeLookup() {
-
+         
         NTPUDPClient timeClient = new NTPUDPClient();
         InetAddress inetAddress;
         try {
@@ -32,6 +33,6 @@ public class TimeGetter {
         }
         return null;
     }
-
+    
 
 }
