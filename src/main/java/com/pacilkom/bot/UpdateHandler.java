@@ -6,7 +6,7 @@ import com.pacilkom.feats.example.StartCommand;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.BotCommand;
 import com.pacilkom.feats.interfaces.ParamBotCommand;
-import com.pacilkom.feats.interfaces.ParamWithAuthBotCommand;
+import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.example.HelloCommand;
 import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.login.LogoutCommand;
@@ -28,31 +28,33 @@ public class UpdateHandler {
 	private Map<String, BotCommand> commandMap;
 	private Map<String, AuthBotCommand> authCommandMap;
 	private Map<String, ParamBotCommand> paramCommandMap;
-	private Map<String, ParamWithAuthBotCommand> paramWithAuthCommandMap;
+	private Map<String, AuthEditableBotCommand> authEditableCommandMap;
 
 	public UpdateHandler() {
 	    registerCommands();
 	    registerAuthCommands();
 	    registerParamCommands();
-	    registerParamWithAuthCommands();
+	    registerauthEditableCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update)
-            throws Exception {
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
 		String text;
 		Long chatId;
 		Integer userId;
+		Integer messageId;
 
 		if (update.hasCallbackQuery()) {
             CallbackQuery message = update.getCallbackQuery();
             text = message.getData();
             chatId = message.getMessage().getChatId();
             userId = message.getFrom().getId();
+            messageId = message.getMessage().getMessageId();
         } else {
             Message message = update.getMessage();
             text = message.getText().trim();
             chatId = message.getChatId();
             userId = message.getFrom().getId();
+            messageId = message.getMessageId();
         }
 
 		int indexOf = text.indexOf(" ");
@@ -63,15 +65,19 @@ public class UpdateHandler {
 
 			if (paramCommandMap.containsKey(commandString)) {
                 return paramCommandMap.get(commandString).execute(chatId, queryString);
-            } else if (paramWithAuthCommandMap.containsKey(commandString)) {
-				return paramWithAuthCommandMap.get(commandString)
-						.execute(chatId, userId, queryString);
+            } else if (authEditableCommandMap.containsKey(commandString)) {
+				return authEditableCommandMap.get(commandString)
+						.execute(chatId, userId, messageId, queryString);
 			}
 		} else if (commandMap.containsKey(text)) {
 		    return commandMap.get(text).execute(chatId);
         } else if (authCommandMap.containsKey(text)) {
-			return authCommandMap.get(text).execute(chatId, userId);
-		}
+            return authCommandMap.get(text).execute(chatId, userId);
+        } else if (text.substring(0,1).equals("/")) {
+		    return new SendMessage(chatId, "Hello, I am Pacilkom Bot. Am I cute? " +
+                    "I hope so... BTW, I don't really understand what you are saying. " +
+                    "So please use bot commands. You can use /help for the command list.");
+        }
         return new SendMessage(chatId, "Command not available. Use /help for more info.");
 	}
 
@@ -95,7 +101,8 @@ public class UpdateHandler {
 	    paramCommandMap.put("/hello", new HelloCommand());
     }
 
-	private void registerParamWithAuthCommands() {
-		paramWithAuthCommandMap = new HashMap<>();
+	private void registerauthEditableCommands() {
+		authEditableCommandMap = new HashMap<>();
+        paramCommandMap.put("/dailyschedule", new HelloCommand());
 	}
 }
