@@ -12,6 +12,8 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.io.Serializable;
+
 @RestController
 public class BotController {
 
