@@ -12,6 +12,7 @@ import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.login.LogoutCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
+import com.pacilkom.feats.siak.schedule.daily.DailyScheduleCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -34,21 +35,20 @@ public class UpdateHandler {
 	    registerCommands();
 	    registerAuthCommands();
 	    registerParamCommands();
-	    registerauthEditableCommands();
+	    registerAuthEditableCommands();
     }
 
-	public BotApiMethod<? extends Serializable> handleUpdate(Update update) {
+	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
 		String text;
 		Long chatId;
 		Integer userId;
-		Integer messageId;
+		Integer messageId = null;
 
 		if (update.hasCallbackQuery()) {
             CallbackQuery message = update.getCallbackQuery();
             text = message.getData();
             chatId = message.getMessage().getChatId();
             userId = message.getFrom().getId();
-            messageId = message.getMessage().getMessageId();
         } else {
             Message message = update.getMessage();
             text = message.getText().trim();
@@ -94,6 +94,7 @@ public class UpdateHandler {
 		authCommandMap = new HashMap<>();
 		authCommandMap.put("/login", new LoginCommand());
 		authCommandMap.put("/logout", new LogoutCommand());
+        authCommandMap.put("/dailyschedule", new DailyScheduleCommand());
 	}
 
     private void registerParamCommands() {
@@ -101,8 +102,8 @@ public class UpdateHandler {
 	    paramCommandMap.put("/hello", new HelloCommand());
     }
 
-	private void registerauthEditableCommands() {
+	private void registerAuthEditableCommands() {
 		authEditableCommandMap = new HashMap<>();
-        paramCommandMap.put("/dailyschedule", new HelloCommand());
+        authEditableCommandMap.put("/dailyschedule", new DailyScheduleCommand());
 	}
 }
