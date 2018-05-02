@@ -4,6 +4,7 @@ import com.pacilkom.csuilogin.SessionDatabase;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -23,6 +24,9 @@ import static com.pacilkom.feats.login.LoginVerifier.CLIENT_ID;
 public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotCommand {
     private static final String ERROR_MESSAGE = "Daily schedule command's usage is:\n" +
             "/dailyschedule [year] [term] [day]";
+    private static final Map<String, Object> EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","
+            + "\"Tuesday\":\"Selasa\",\"Wednesday\":\"Rabu\",\"Thursday\":\"Kamis\","
+            + "\"Friday\":\"Jumat\",\"Saturday\":\"Sabtu\"}").toMap();
 
     @Override
     public BotApiMethod<? extends Serializable> execute(Long chatId, Integer userId) throws Exception {
@@ -43,6 +47,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         params.put("message_id", messageId == null ? null : messageId.toString());
         params.put("access_token", (String) loginData.get("access_token"));
         params.put("npm", (String) loginData.get("identity_number"));
+        System.out.println(params.get("access_token"));
 
         if (params.size() == 7) {
             return getDayResponse(params);
@@ -81,7 +86,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
     }
 
     private BotApiMethod<? extends Serializable> getUniversalResponse(Map<String, String> params) {
-        String message = "Hi! To see your class schedule, chosse the year first.. " +
+        String message = "Hi! To see your class schedule, choose the year first.. " +
                 "(or \"Current Term\" if you want to show your current term schedule.";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
@@ -106,44 +111,122 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                 buttons.getKeyboard().add(row);
             }
 
-            row.add(new InlineKeyboardButton()
-                        .setText(i + "").setCallbackData("/dailyschedule " + i));
+            row.add(new InlineKeyboardButton().setText(i + "")
+                    .setCallbackData("/dailyschedule " + i));
         }
 
         return response;
     }
 
     private BotApiMethod<? extends Serializable> getYearResponse(Map<String, String> params) {
+        String message = "Okay... you choose academic year of " + params.get("year") +
+                ". Then you should choose the term now (1 = odd, 2 = even)";
+        InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
 
-        BotApiMethod<? extends Serializable> result;
-        if (params.get("message_id") == null) {
-            result = new SendMessage();
-        } else {
-            result = new EditMessageText();
-        }
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        buttons.getKeyboard().add(row);
+        row.add(new InlineKeyboardButton().setText("1")
+                .setCallbackData("/dailyschedule " + params.get("year") + " 1"));
+        row.add(new InlineKeyboardButton().setText("2")
+                .setCallbackData("/dailyschedule " + params.get("year") + " 2"));
+        row.add(new InlineKeyboardButton().setText("<< Go Back")
+                .setCallbackData("/dailyschedule"));
 
-        return result;
+        return response;
     }
 
     private BotApiMethod<? extends Serializable> getTermResponse(Map<String, String> params) {
+        String message = "Okay... you choose academic year of " + params.get("year") + " and term "
+                + params.get("term") + ". Then you should choose the day now.";
+        InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
 
-        BotApiMethod<? extends Serializable> result;
-        if (params.get("message_id") == null) {
-            result = new SendMessage();
-        } else {
-            result = new EditMessageText();
-        }
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        buttons.getKeyboard().add(row1);
+        buttons.getKeyboard().add(row2);
+        buttons.getKeyboard().add(row3);
 
-        return result;
+        row1.add(new InlineKeyboardButton()
+                .setText("Monday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Monday"));
+        row2.add(new InlineKeyboardButton()
+                .setText("Tuesday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Tuesday"));
+        row1.add(new InlineKeyboardButton()
+                .setText("Wednesday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Wednesday"));
+        row2.add(new InlineKeyboardButton()
+                .setText("Thursday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Thursday"));
+        row1.add(new InlineKeyboardButton()
+                .setText("Friday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Friday"));
+        row2.add(new InlineKeyboardButton()
+                .setText("Saturday").setCallbackData("/dailyschedule " + params.get("year")
+                        + params.get("term") + " Saturday"));
+        row3.add(new InlineKeyboardButton().setText("<< Go Back")
+                .setCallbackData("/dailyschedule " + params.get("year")));
+
+        return response;
     }
 
     private BotApiMethod<? extends Serializable> getDayResponse(Map<String, String> params) {
+        String message = "I get all the information I need.. Here are your schedule for "
+                + params.get("day") + "on academic year " + params.get("year") + " term "
+                + params.get("term") + ":\n";
+        InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        try {
+            URL url = new URL("https://api.cs.ui.ac.id/siakngcs/jadwal-list/" + params.get("year")
+                    + "/" + params.get("term") + "/" + params.get("day") + "/" + params.get("npm")
+                    + "/?access_token=" + params.get("access_token") + "&client_id=" + CLIENT_ID
+                    + "&format=json");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-        BotApiMethod<? extends Serializable> result = null;
-        return result;
+            String result = "";
+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                result += line;
+            }
+
+            rd.close();
+            List<Object> json = new JSONArray(result).toList();
+
+            for (Object obj : json) {
+                JSONObject item = (JSONObject) obj;
+                String mulai = item.getString("jam_mulai");
+                String selesai = item.getString("jam_selesai");
+                mulai.substring(0, mulai.length() - 3);
+                selesai.substring(0, selesai.length() - 3);
+                message += "/n" + mulai + " - " + selesai + " -> " + item.getString("nm_kls")
+                        + ", ruang: " + ((JSONObject) item.get("id_ruang")).getString("nm_ruang")
+                        + ", dosen: " + ((JSONObject) item.get("pengajar")).getString("nama");
+            }
+        } catch (Exception e) {
+            return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
+                    "connection issues so I can't connect to Fasilkom UI API server :( " +
+                    "Please try again.");
+        }
+
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        buttons.getKeyboard().add(row);
+        row.add(new InlineKeyboardButton().setText("<< Go Back")
+                .setCallbackData("/dailyschedule " + params.get("year") + params.get("term")));
+
+        return response;
     }
 
     private BotApiMethod<? extends Serializable> createMethodInstance
@@ -165,6 +248,10 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return markupInline.setKeyboard(rowsInline);
     }
 
+    private String translateDay(String enDay) {
+        return (String) EN_ID_DAYS.get(enDay);
+    }
+
     private int getFirstYear(String accessToken, String npm) {
         try {
             URL url = new URL("https://api.cs.ui.ac.id/siakngcs/mahasiswa/" +
@@ -180,10 +267,9 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
             while ((line = rd.readLine()) != null) {
                 result += line;
             }
-            System.out.println(result);
+
             rd.close();
             JSONObject json = new JSONObject(result);
-            System.out.println(result);
             return json.getInt("tahun_masuk");
         } catch (Exception e) {
             return -1;
