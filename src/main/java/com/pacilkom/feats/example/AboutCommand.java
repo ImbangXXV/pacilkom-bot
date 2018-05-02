@@ -5,7 +5,7 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 
 public class AboutCommand implements BotCommand {
 
-    public SendMessage execute(Long chatId) throws Exception {
+    public SendMessage execute(Long chatId) {
         return new SendMessage(chatId, "Hello, I am Pacilkom Bot. I am just a bot. " +
                 "So, as everybody would expect, I must be made by hoomans. And here are the " +
                 "hoomans who made me alive:\n" +

@@ -28,8 +28,9 @@ public class LoginVerifier {
             }
 
             rd.close();
-            JSONObject json = new JSONObject(result);
-            return json.toMap();
+            Map<String, Object> loginData = new JSONObject(result).toMap();
+            loginData.put("access_token", accessToken);
+            return loginData;
         } catch (Exception e) {
             return null;
         }
