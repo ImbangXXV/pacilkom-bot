@@ -114,6 +114,10 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                     .setCallbackData("/dailyschedule " + i));
         }
 
+        row = new ArrayList<>();
+        buttons.getKeyboard().add(row);
+        row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
+
         return response;
     }
 
@@ -239,6 +243,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         row.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule " + params.get("year")
                         + " " + params.get("term")));
+        row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
 
         return response;
     }

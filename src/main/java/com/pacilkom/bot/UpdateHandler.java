@@ -16,6 +16,8 @@ import com.pacilkom.feats.siak.schedule.daily.DailyScheduleCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -50,6 +52,10 @@ public class UpdateHandler {
             chatId = message.getMessage().getChatId();
             messageId = message.getMessage().getMessageId();
             userId = message.getFrom().getId();
+
+            if (text.equals("banish")) {
+                return new DeleteMessage().setChatId(chatId).setMessageId(messageId);
+            }
         } else {
             Message message = update.getMessage();
             text = message.getText().trim();
