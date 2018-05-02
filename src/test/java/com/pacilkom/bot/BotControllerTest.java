@@ -27,40 +27,4 @@ public class BotControllerTest {
         this.mockMvc.perform(get("/webhook")).andDo(print())
                 .andExpect(status().isMethodNotAllowed());
     }
-
-    @Test
-    public void appropriateWebhookPostRequest() throws Exception {
-        this.mockMvc.perform(post("/webhook").contentType("application/json")
-                .content("{\n" +
-                "    \"update_id\": 890164771,\n" +
-                "    \"message\": {\n" +
-                "        \"message_id\": 23,\n" +
-                "        \"from\": {\n" +
-                "            \"id\": 439700050,\n" +
-                "            \"is_bot\": false,\n" +
-                "            \"first_name\": \"Bina Sarana Informatika\",\n" +
-                "            \"username\": \"BSI_aja\",\n" +
-                "            \"language_code\": \"en-gb\"\n" +
-                "        },\n" +
-                "        \"chat\": {\n" +
-                "            \"id\": 439700050,\n" +
-                "            \"first_name\": \"Bina Sarana Informatika\",\n" +
-                "            \"username\": \"BSI_aja\",\n" +
-                "            \"type\": \"private\"\n" +
-                "        },\n" +
-                "        \"date\": 1524599606,\n" +
-                "        \"text\": \"/hello I am human\",\n" +
-                "        \"entities\": [\n" +
-                "            {\n" +
-                "                \"offset\": 0,\n" +
-                "                \"length\": 3,\n" +
-                "                \"type\": \"bot_command\"\n" +
-                "            }\n" +
-                "        ]\n" +
-                "    }\n" +
-                "}")).andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.text")
-                        .value("Hello, this is your message: I am human"))
-                .andExpect(jsonPath("$.method").value("sendmessage"));
-    }
 }
