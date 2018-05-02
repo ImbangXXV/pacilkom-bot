@@ -116,6 +116,15 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
 
         row = new ArrayList<>();
         buttons.getKeyboard().add(row);
+
+        String currentTerm = "/dailyschedule ";
+        if (month < 8) {
+            currentTerm += (year - 1) + " 2";
+        } else {
+            currentTerm += year + " 1";
+        }
+
+        row.add(new InlineKeyboardButton().setText("Current Term").setCallbackData(currentTerm));
         row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
 
         return response;
