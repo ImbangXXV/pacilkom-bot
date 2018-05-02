@@ -6,9 +6,9 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
 public class PacilkomBot extends TelegramWebhookBot {
-    private static final String USERNAME = "pacilkom_bot";
-    private static final String API_KEY_ORI = "531440373:AAHKnxwbUIG0D1DlwDGxRqQIsoZ0efX0cVs";
-    private static final String PATH = "https://pacilkom-bot.herokuapp.com/webhook";
+    public static final String USERNAME = "pacilkom_bot";
+    public static final String API_KEY   = "531440373:AAHKnxwbUIG0D1DlwDGxRqQIsoZ0efX0cVs";
+    public static final String PATH = "https://pacilkom-bot.herokuapp.com/webhook";
 
     @Autowired
     private UpdateHandler handler;
@@ -32,7 +32,7 @@ public class PacilkomBot extends TelegramWebhookBot {
 
     @Override
     public String getBotToken() {
-        return API_KEY_ORI;
+        return API_KEY;
     }
 
     @Override

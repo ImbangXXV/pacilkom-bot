@@ -1,6 +1,7 @@
 package com.pacilkom.bot.controller;
 
 import com.pacilkom.csuilogin.SessionDatabase;
+import com.pacilkom.feats.login.Encryptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,16 +30,17 @@ public class LoginController {
     private TelegramWebhookBot bot;
 
     @RequestMapping(value = "/csui-login", method = RequestMethod.GET)
-    public String loginPage(@RequestParam("id") int user_id, Model model) {
-        model.addAttribute("id", user_id);
+    public String loginPage(@RequestParam("id") String enc_user_id, Model model) {
+        model.addAttribute("id", enc_user_id);
         return "login-page";
     }
 
     @RequestMapping(value = "/csui-login/get-session", method = RequestMethod.POST)
-    public String loginConfirm(@RequestParam("id") int user_id,
+    public String loginConfirm(@RequestParam("id") String enc_user_id,
                         @RequestParam("username") String username,
                         @RequestParam("password") String password, Model model) {
         String access_token;
+        int user_id = Integer.parseInt(Encryptor.decrypt(enc_user_id));
         try {
             model.addAttribute("id", user_id);
             access_token = getAccessToken(username, password);
