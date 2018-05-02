@@ -22,7 +22,8 @@ public class LoginCommand implements AuthBotCommand {
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
                     .setText("Switch Account")
-                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/?id=" + userId));
+                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/?id=" +
+                            Encryptor.encrypt(userId.toString())));
             rowInline.add(new InlineKeyboardButton()
                     .setText("Logout")
                     .setCallbackData("/logout"));
@@ -34,7 +35,8 @@ public class LoginCommand implements AuthBotCommand {
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
                     .setText("Login with CSUI account")
-                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/?id=" + userId));
+                    .setUrl("https://pacilkom-bot.herokuapp.com/csui-login/?id=" +
+                            Encryptor.encrypt(userId.toString())));
         }
 
         // Set the keyboard to the markup
