@@ -20,7 +20,7 @@ public class LoginCommand implements AuthBotCommand {
 
         if (loginData != null) {
             message = new SendMessage(chatId,
-                    "Kamu sudah login dengan akun CSUI: " + loginData.get("usermame")
+                    "Kamu sudah login dengan akun CSUI: " + loginData.get("username")
                             + " dengan role " + loginData.get("role"));
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
