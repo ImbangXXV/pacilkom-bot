@@ -21,14 +21,7 @@ public class BotController {
     private TelegramWebhookBot bot;
 
     @RequestMapping(value = "/webhook", method = RequestMethod.POST)
-    public BotApiMethod<? extends Serializable> webhook(
-            @RequestBody Update update) throws TelegramApiException {
-        BotApiMethod<? extends Serializable> method = bot.onWebhookUpdateReceived(update);
-        if (method != null) {
-            bot.execute(method);
-            return method;
-        } else {
-            return new SendMessage((long) -1, "Received message is empty.");
-        }
+    public void webhook(@RequestBody Update update) throws TelegramApiException {
+        bot.execute(bot.onWebhookUpdateReceived(update));
     }
 }
