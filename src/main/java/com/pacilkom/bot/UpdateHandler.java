@@ -48,13 +48,13 @@ public class UpdateHandler {
             CallbackQuery message = update.getCallbackQuery();
             text = message.getData();
             chatId = message.getMessage().getChatId();
+            messageId = message.getMessage().getMessageId();
             userId = message.getFrom().getId();
         } else {
             Message message = update.getMessage();
             text = message.getText().trim();
             chatId = message.getChatId();
             userId = message.getFrom().getId();
-            messageId = message.getMessageId();
         }
 
 		int indexOf = text.indexOf(" ");

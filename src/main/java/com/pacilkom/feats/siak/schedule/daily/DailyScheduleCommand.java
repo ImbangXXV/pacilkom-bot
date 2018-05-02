@@ -47,7 +47,6 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         params.put("message_id", messageId == null ? null : messageId.toString());
         params.put("access_token", (String) loginData.get("access_token"));
         params.put("npm", (String) loginData.get("identity_number"));
-        System.out.println(params.get("access_token"));
 
         if (params.size() == 7) {
             return getDayResponse(params);
@@ -65,7 +64,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
     private Map<String, String> parseParameter(String text) {
         Map<String, String> result = new HashMap<>();
 
-        if (text == null) {
+        if (text == null || text.isEmpty()) {
             return result;
         }
 
@@ -133,7 +132,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         row.add(new InlineKeyboardButton().setText("2")
                 .setCallbackData("/dailyschedule " + params.get("year") + " 2"));
         row.add(new InlineKeyboardButton().setText("<< Go Back")
-                .setCallbackData("/dailyschedule"));
+                .setCallbackData("/dailyschedule "));
 
         return response;
     }
@@ -154,22 +153,22 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         buttons.getKeyboard().add(row3);
 
         row1.add(new InlineKeyboardButton()
-                .setText("Monday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Monday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Monday"));
         row2.add(new InlineKeyboardButton()
-                .setText("Tuesday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Tuesday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Tuesday"));
         row1.add(new InlineKeyboardButton()
-                .setText("Wednesday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Wednesday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Wednesday"));
         row2.add(new InlineKeyboardButton()
-                .setText("Thursday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Thursday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Thursday"));
         row1.add(new InlineKeyboardButton()
-                .setText("Friday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Friday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Friday"));
         row2.add(new InlineKeyboardButton()
-                .setText("Saturday").setCallbackData("/dailyschedule " + params.get("year")
+                .setText("Saturday").setCallbackData("/dailyschedule " + params.get("year") + " "
                         + params.get("term") + " Saturday"));
         row3.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule " + params.get("year")));
@@ -179,15 +178,15 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
 
     private BotApiMethod<? extends Serializable> getDayResponse(Map<String, String> params) {
         String message = "I get all the information I need.. Here are your schedule for "
-                + params.get("day") + "on academic year " + params.get("year") + " term "
+                + params.get("day") + " on academic year " + params.get("year") + " term "
                 + params.get("term") + ":\n";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
         try {
             URL url = new URL("https://api.cs.ui.ac.id/siakngcs/jadwal-list/" + params.get("year")
-                    + "/" + params.get("term") + "/" + params.get("day") + "/" + params.get("npm")
-                    + "/?access_token=" + params.get("access_token") + "&client_id=" + CLIENT_ID
-                    + "&format=json");
+                    + "/" + params.get("term") + "/" + translateDay(params.get("day"))
+                    + "/" + params.get("npm") + "/?access_token=" + params.get("access_token")
+                    + "&client_id=" + CLIENT_ID + "&format=json");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -202,17 +201,31 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
             rd.close();
             List<Object> json = new JSONArray(result).toList();
 
-            for (Object obj : json) {
-                JSONObject item = (JSONObject) obj;
-                String mulai = item.getString("jam_mulai");
-                String selesai = item.getString("jam_selesai");
-                mulai.substring(0, mulai.length() - 3);
-                selesai.substring(0, selesai.length() - 3);
-                message += "/n" + mulai + " - " + selesai + " -> " + item.getString("nm_kls")
-                        + ", ruang: " + ((JSONObject) item.get("id_ruang")).getString("nm_ruang")
-                        + ", dosen: " + ((JSONObject) item.get("pengajar")).getString("nama");
+            if (json.size() > 0) {
+                for (Object obj : json) {
+                    Map<String, Object> item = (Map<String, Object>) obj;
+                    String mulai = (String) item.get("jam_mulai");
+                    String selesai = (String) item.get("jam_selesai");
+                    mulai.substring(0, mulai.length() - 3);
+                    selesai.substring(0, selesai.length() - 3);
+
+                    Map<String, Object> room = (Map<String, Object>) item.get("id_ruang");
+                    Map<String, Object> detail = (Map<String, Object>) item.get("kd_kls_sc");
+                    List<Object> lecturers = (List<Object>) detail.get("pengajar");
+
+                    message += "\n" + mulai + " - " + selesai + " -> " + (String) detail.get("nm_kls")
+                            + " at " + room.get("nm_ruang") + " with ";
+
+                    for (int i = 0; i < lecturers.size(); i++) {
+                        Map<String, Object> lecturer = (Map<String, Object>) lecturers.get(i);
+                        message += (i > 0 ? " and " : "") + lecturer.get("nama");
+                    }
+                }
+            } else {
+                message += "\nHmm... there are no class that you must attend on that day...";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
                     "connection issues so I can't connect to Fasilkom UI API server :( " +
                     "Please try again.");
@@ -224,7 +237,8 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("<< Go Back")
-                .setCallbackData("/dailyschedule " + params.get("year") + params.get("term")));
+                .setCallbackData("/dailyschedule " + params.get("year")
+                        + " " + params.get("term")));
 
         return response;
     }
