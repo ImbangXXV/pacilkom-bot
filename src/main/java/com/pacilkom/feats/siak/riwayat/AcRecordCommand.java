@@ -109,6 +109,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         }
 
         row = new ArrayList<>();
+        buttons.getKeyboard().add(row);
 
         row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
 
@@ -147,8 +148,14 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .stream().filter(t -> t.getTerm() == term && t.getYear() == year)
                 .collect(Collectors.toList());
 
-        message += transcripts.stream().map(t -> t.toString())
-        .collect(Collectors.joining("\n\n"));
+        if (transcripts.size() > 0) {
+            message += transcripts.stream().map(t -> t.toString())
+                    .collect(Collectors.joining("\n\n"));
+        } else {
+            message += "\nIt seems you have no record on academic year " + year
+            + " term " + term + "...";
+        }
+
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);

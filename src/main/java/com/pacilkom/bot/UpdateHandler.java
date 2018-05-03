@@ -113,6 +113,6 @@ public class UpdateHandler {
 	private void registerAuthEditableCommands() {
 		authEditableCommandMap = new HashMap<>();
         authEditableCommandMap.put("/dailyschedule", new DailyScheduleCommand());
-        authCommandMap.put("/record", new AcRecordCommand());
+        authEditableCommandMap.put("/record", new AcRecordCommand());
 	}
 }
