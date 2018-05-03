@@ -113,8 +113,10 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         buttons.getKeyboard().add(row);
 
         String currentTerm = "/dailyschedule ";
-        if (month < 8) {
+        if (month < 6) {
             currentTerm += (year - 1) + " 2";
+        } else if (month < 8) {
+            currentTerm += (year - 1) + " 3";
         } else {
             currentTerm += year + " 1";
         }
@@ -139,6 +141,8 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                 .setCallbackData("/dailyschedule " + params.get("year") + " 1"));
         row.add(new InlineKeyboardButton().setText("2")
                 .setCallbackData("/dailyschedule " + params.get("year") + " 2"));
+        row.add(new InlineKeyboardButton().setText("SP")
+                .setCallbackData("/dailyschedule " + params.get("year") + " 3"));
         row.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule "));
 
