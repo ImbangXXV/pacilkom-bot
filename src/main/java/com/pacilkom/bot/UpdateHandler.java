@@ -12,6 +12,7 @@ import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.login.LogoutCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
+import com.pacilkom.feats.siak.riwayat.AcRecordCommand;
 import com.pacilkom.feats.siak.schedule.daily.DailyScheduleCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -101,6 +102,7 @@ public class UpdateHandler {
 		authCommandMap.put("/login", new LoginCommand());
 		authCommandMap.put("/logout", new LogoutCommand());
         authCommandMap.put("/dailyschedule", new DailyScheduleCommand());
+        authCommandMap.put("/record", new AcRecordCommand());
 	}
 
     private void registerParamCommands() {
@@ -111,5 +113,6 @@ public class UpdateHandler {
 	private void registerAuthEditableCommands() {
 		authEditableCommandMap = new HashMap<>();
         authEditableCommandMap.put("/dailyschedule", new DailyScheduleCommand());
+        authCommandMap.put("/record", new AcRecordCommand());
 	}
 }
