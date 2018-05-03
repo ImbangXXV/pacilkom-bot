@@ -14,7 +14,7 @@ public class LoginVerifier {
     public static String verify(int userId) {
         try {
             String accessToken = SessionDatabase.getInstance().getAccessToken(userId);
-            return getUserData(accessToken).getString("username");
+            return getUserData(accessToken).getString("identity_number");
         } catch (Exception e) {
             return null;
         }
