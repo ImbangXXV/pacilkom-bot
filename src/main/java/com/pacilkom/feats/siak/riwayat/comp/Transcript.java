@@ -2,6 +2,10 @@ package com.pacilkom.feats.siak.riwayat.comp;
 
 import org.json.JSONObject;
 
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class Transcript {
     private String subject;
     private String lecturer;
@@ -68,6 +72,12 @@ public class Transcript {
         this.lecturer = lecturer;
     }
 
+    public String toString() {
+        return "Subject : " + getSubject()
+                + "\nLecturer : " + getLecturer()
+                + "\nCredit : " + getCredit()
+                + "\nGrade : " + getGrade();
+    }
     public static Transcript convertJson(JSONObject json) {
         JSONObject collClass = (JSONObject) json.get("kelas");
         JSONObject subjectInfo = (JSONObject) collClass.get("nm_mk_cl");

@@ -1,18 +1,24 @@
 package com.pacilkom.bot;
 
+import com.pacilkom.feats.example.AboutCommand;
+import com.pacilkom.feats.example.HelpCommand;
+import com.pacilkom.feats.example.StartCommand;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.BotCommand;
 import com.pacilkom.feats.interfaces.ParamBotCommand;
-import com.pacilkom.feats.interfaces.ParamWithAuthBotCommand;
+import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.example.HelloCommand;
 import com.pacilkom.feats.login.LoginCommand;
 import com.pacilkom.feats.login.LogoutCommand;
 import com.pacilkom.feats.scele.latestNews.SceleNewsCommand;
 import com.pacilkom.feats.scele.latestTime.SceleTimeCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pacilkom.feats.siak.schedule.daily.DailyScheduleCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 
@@ -22,31 +28,40 @@ import java.util.Map;
 
 @Component
 public class UpdateHandler {
-
-	private Logger LOG = LoggerFactory.getLogger(UpdateHandler.class);
-
 	private Map<String, BotCommand> commandMap;
 	private Map<String, AuthBotCommand> authCommandMap;
 	private Map<String, ParamBotCommand> paramCommandMap;
-	private Map<String, ParamWithAuthBotCommand> paramWithAuthCommandMap;
+	private Map<String, AuthEditableBotCommand> authEditableCommandMap;
 
 	public UpdateHandler() {
 	    registerCommands();
 	    registerAuthCommands();
 	    registerParamCommands();
-	    registerParamWithAuthCommands();
+	    registerAuthEditableCommands();
     }
 
 	public BotApiMethod<? extends Serializable> handleUpdate(Update update) throws Exception {
+		String text;
+		Long chatId;
+		Integer userId;
+		Integer messageId = null;
 
-		Message message = update.getMessage();
+		if (update.hasCallbackQuery()) {
+            CallbackQuery message = update.getCallbackQuery();
+            text = message.getData();
+            chatId = message.getMessage().getChatId();
+            messageId = message.getMessage().getMessageId();
+            userId = message.getFrom().getId();
 
-		Long chatId = message.getChatId();
-		Integer userId = message.getFrom().getId();
-		String text = message.getText().trim();
-
-		LOG.debug("Chat id:" + chatId);
-		LOG.debug("Text : " + text);
+            if (text.equals("banish")) {
+                return new DeleteMessage().setChatId(chatId).setMessageId(messageId);
+            }
+        } else {
+            Message message = update.getMessage();
+            text = message.getText().trim();
+            chatId = message.getChatId();
+            userId = message.getFrom().getId();
+        }
 
 		int indexOf = text.indexOf(" ");
 
@@ -56,20 +71,27 @@ public class UpdateHandler {
 
 			if (paramCommandMap.containsKey(commandString)) {
                 return paramCommandMap.get(commandString).execute(chatId, queryString);
-            } else if (paramWithAuthCommandMap.containsKey(commandString)) {
-				return paramWithAuthCommandMap.get(commandString)
-						.execute(chatId, userId, queryString);
+            } else if (authEditableCommandMap.containsKey(commandString)) {
+				return authEditableCommandMap.get(commandString)
+						.execute(chatId, userId, messageId, queryString);
 			}
 		} else if (commandMap.containsKey(text)) {
 		    return commandMap.get(text).execute(chatId);
         } else if (authCommandMap.containsKey(text)) {
-			return authCommandMap.get(text).execute(chatId, userId);
-		}
-        return null;
+            return authCommandMap.get(text).execute(chatId, userId);
+        } else if (text.substring(0,1).equals("/")) {
+		    return new SendMessage(chatId, "Hello, I am Pacilkom Bot. Am I cute? " +
+                    "I hope so... BTW, I don't really understand what you are saying. " +
+                    "So please use bot commands. You can use /help for the command list.");
+        }
+        return new SendMessage(chatId, "Command not available. Use /help for more info.");
 	}
 
 	private void registerCommands() {
 	    commandMap = new HashMap<>();
+		commandMap.put("/start", new StartCommand());
+		commandMap.put("/about", new AboutCommand());
+		commandMap.put("/help", new HelpCommand());
 	    commandMap.put("/news", new SceleNewsCommand());
 	    commandMap.put("/time", new SceleTimeCommand());
     }
@@ -78,6 +100,7 @@ public class UpdateHandler {
 		authCommandMap = new HashMap<>();
 		authCommandMap.put("/login", new LoginCommand());
 		authCommandMap.put("/logout", new LogoutCommand());
+        authCommandMap.put("/dailyschedule", new DailyScheduleCommand());
 	}
 
     private void registerParamCommands() {
@@ -85,7 +108,8 @@ public class UpdateHandler {
 	    paramCommandMap.put("/hello", new HelloCommand());
     }
 
-	private void registerParamWithAuthCommands() {
-		paramWithAuthCommandMap = new HashMap<>();
+	private void registerAuthEditableCommands() {
+		authEditableCommandMap = new HashMap<>();
+        authEditableCommandMap.put("/dailyschedule", new DailyScheduleCommand());
 	}
 }

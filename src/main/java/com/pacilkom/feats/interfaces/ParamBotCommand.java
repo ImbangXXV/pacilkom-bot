@@ -1,7 +1,8 @@
 package com.pacilkom.feats.interfaces;
 
-import org.telegram.telegrambots.api.methods.send.SendMessage;
+import java.io.Serializable;
+import org.telegram.telegrambots.api.methods.BotApiMethod;
 
 public interface ParamBotCommand {
-    SendMessage execute(Long chatId, String text) throws Exception;
+    BotApiMethod<? extends Serializable> execute(Long chatId, String text) throws Exception;
 }

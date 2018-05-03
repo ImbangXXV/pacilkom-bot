@@ -26,7 +26,7 @@ public class NewsScrapper {
                     .select("div.options")
                     .select("div.link")
                     .select("a").attr("href");
-            messages.add(new Hyperlink(title + " " + author, link));
+            messages.add(new Hyperlink(title, link));
         }
         return messages;
     }
