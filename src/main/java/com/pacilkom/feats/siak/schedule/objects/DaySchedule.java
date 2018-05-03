@@ -93,4 +93,17 @@ public class DaySchedule {
 
         return items;
     }
+
+    public String toString() {
+        if (items.size() == 0) {
+            return "\nHmm... there are no class that you must attend on that day...";
+        }
+
+        String result = "";
+        for (int i = 0; i < items.size(); i++) {
+            result += items.get(i).toString();
+        }
+
+        return result;
+    }
 }

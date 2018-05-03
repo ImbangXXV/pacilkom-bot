@@ -44,4 +44,16 @@ public class ScheduleItem {
         return new ScheduleItem(course, startTime, endTime, roomName);
     }
 
+    public String toString() {
+        String result = "\n" + startTime.toString() + " - " + endTime.toString() + "\n"
+                + "- Class: " + course.getClassName() + "\n"
+                + "- Room: " + roomName + "\n"
+                + "- Lecturer(s):\n";
+
+        for (String lecturer : course.getLecturers()) {
+            result += "  > " + lecturer + "\n";
+        }
+
+        return result;
+    }
 }

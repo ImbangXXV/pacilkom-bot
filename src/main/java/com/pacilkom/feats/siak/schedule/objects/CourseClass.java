@@ -53,10 +53,23 @@ public class CourseClass {
 
         JSONArray lecturers = course.getJSONArray("pengajar");
         List<String> lecturerNames = new ArrayList<>();
-        for (int i = 0; i <= lecturers.length(); i++) {
+        for (int i = 0; i < lecturers.length(); i++) {
             lecturerNames.add(lecturers.getJSONObject(i).getString("nama"));
         }
 
         return new CourseClass(subject, className, classCode, lecturerNames, credit);
+    }
+
+    public String toString() {
+        String result = className + "(" + classCode + "):\n"
+                + "- Course Name: " + subject + "\n"
+                + "- Credit: " + credit + " SKS\n"
+                + "- Lecturer(s):\n";
+
+        for (String lecturer : lecturers) {
+            result += "  > " + lecturer + "\n";
+        }
+
+        return result;
     }
 }
