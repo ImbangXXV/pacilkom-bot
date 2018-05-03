@@ -1,6 +1,5 @@
 package com.pacilkom.feats.siak.schedule.daily;
 
-import com.pacilkom.csuilogin.SessionDatabase;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
@@ -92,19 +91,15 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);
 
-        int firstYear = getFirstYear(params.get("access_token"), params.get("npm"));
-        if (firstYear < 0) {
-            return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
-                    "connection issues so I can't connect to Fasilkom UI API server :( " +
-                    "Please try again.");
-        }
+        int firstYear = getFirstYear(params.get("npm"));
 
         int month = Calendar.getInstance().get(Calendar.MONTH);
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
-        for (int i = firstYear; (month < 8 && i < year) || (month >= 8 && i <= year); i++) {
+        for (int i = firstYear; ((month < 8 && i < year) || (month >= 8 && i <= year))
+                && i <= firstYear + 6; i++) {
             if ((i - firstYear) / 2 > 0 && (i = firstYear) % 2 == 0) {
                 row = new ArrayList<>();
                 buttons.getKeyboard().add(row);
@@ -118,8 +113,10 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         buttons.getKeyboard().add(row);
 
         String currentTerm = "/dailyschedule ";
-        if (month < 8) {
+        if (month < 6) {
             currentTerm += (year - 1) + " 2";
+        } else if (month < 8) {
+            currentTerm += (year - 1) + " 3";
         } else {
             currentTerm += year + " 1";
         }
@@ -144,6 +141,8 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                 .setCallbackData("/dailyschedule " + params.get("year") + " 1"));
         row.add(new InlineKeyboardButton().setText("2")
                 .setCallbackData("/dailyschedule " + params.get("year") + " 2"));
+        row.add(new InlineKeyboardButton().setText("SP")
+                .setCallbackData("/dailyschedule " + params.get("year") + " 3"));
         row.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule "));
 
@@ -161,28 +160,24 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         List<InlineKeyboardButton> row3 = new ArrayList<>();
+        List<InlineKeyboardButton> curr;
         buttons.getKeyboard().add(row1);
         buttons.getKeyboard().add(row2);
         buttons.getKeyboard().add(row3);
 
-        row1.add(new InlineKeyboardButton()
-                .setText("Monday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Monday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Tuesday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Tuesday"));
-        row1.add(new InlineKeyboardButton()
-                .setText("Wednesday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Wednesday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Thursday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Thursday"));
-        row1.add(new InlineKeyboardButton()
-                .setText("Friday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Friday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Saturday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Saturday"));
+        String[] days = (String[]) EN_ID_DAYS.keySet().toArray();
+        for (int i = 0; i < days.length; i++) {
+            if (i % 2 == 0) {
+                curr = row1;
+            } else {
+                curr = row2;
+            }
+
+            curr.add(new InlineKeyboardButton()
+                    .setText(days[i]).setCallbackData("/dailyschedule " + params.get("year") + " "
+                            + params.get("term") + " " + days[i]));
+        }
+
         row3.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule " + params.get("year")));
 
@@ -280,28 +275,8 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return (String) EN_ID_DAYS.get(enDay);
     }
 
-    private int getFirstYear(String accessToken, String npm) {
-        try {
-            URL url = new URL("https://api.cs.ui.ac.id/siakngcs/mahasiswa/" +
-                    "cari-info-program/" + npm + "/?access_token=" + accessToken + "&client_id=" +
-                    CLIENT_ID + "&format=json");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String result = "";
-
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result += line;
-            }
-
-            rd.close();
-            JSONObject json = new JSONObject(result);
-            return json.getInt("tahun_masuk");
-        } catch (Exception e) {
-            return -1;
-        }
-
+    private int getFirstYear(String npm) {
+        String year = "20" + npm.substring(0, 2);
+        return Integer.parseInt(year);
     }
 }
