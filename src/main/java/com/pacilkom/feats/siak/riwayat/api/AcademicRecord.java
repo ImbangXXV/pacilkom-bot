@@ -2,32 +2,37 @@ package com.pacilkom.feats.siak.riwayat.api;
 
 import com.pacilkom.feats.login.LoginVerifier;
 import com.pacilkom.feats.siak.riwayat.comp.Transcript;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AcademicRecord {
 
     private static final String CLIENT_ID = "X3zNkFmepkdA47ASNMDZRX3Z9gqSU1Lwywu5WepG";
     private static final String API_LINK = "https://api.cs.ui.ac.id/siakngcs/mahasiswa/";
 
-    public static List<Transcript> getAllTranscript(Integer userId) throws IOException, SQLException {
+    public static List<Transcript> getAllTranscript(Integer userId) throws IOException {
         List<Transcript> transcripts = new LinkedList<>();
-        List<Object> json = getJson(userId);
-        json.forEach(t -> transcripts.add(Transcript.convertJson((JSONObject) t)));
+        JSONArray json = getJson(userId);
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject obj = json.getJSONObject(i);
+            if (!obj.isNull("kelas")) {
+                transcripts.add(Transcript.convertJson(obj));
+            }
+        }
         return transcripts;
     }
 
-    private static List<Object> getJson(Integer userId) throws IOException {
+    private static JSONArray getJson(Integer userId) throws IOException {
         Map<String, Object> data = LoginVerifier.getData(userId);
         String result = "";
         URL url = new URL(API_LINK + data.get("identity_number")
@@ -43,7 +48,7 @@ public class AcademicRecord {
         }
 
         rd.close();
-        return new JSONArray(result).toList();
+        return new JSONArray(result);
     }
 
 }
