@@ -3,6 +3,7 @@ package com.pacilkom.feats.siak.schedule.daily;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
+import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -189,54 +190,15 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                 + params.get("day") + " on academic year " + params.get("year") + " term "
                 + params.get("term") + ":\n";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
+        DaySchedule schedule = DaySchedule.getApiResponse(params.get("access_token"), params.get("npm"),
+                params.get("year"), params.get("term"), params.get("day"));
 
-        try {
-            URL url = new URL("https://api.cs.ui.ac.id/siakngcs/jadwal-list/" + params.get("year")
-                    + "/" + params.get("term") + "/" + translateDay(params.get("day"))
-                    + "/" + params.get("npm") + "/?access_token=" + params.get("access_token")
-                    + "&client_id=" + CLIENT_ID + "&format=json");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String result = "";
-
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result += line;
-            }
-
-            rd.close();
-            List<Object> json = new JSONArray(result).toList();
-
-            if (json.size() > 0) {
-                for (Object obj : json) {
-                    Map<String, Object> item = (Map<String, Object>) obj;
-                    String mulai = (String) item.get("jam_mulai");
-                    String selesai = (String) item.get("jam_selesai");
-                    mulai.substring(0, mulai.length() - 3);
-                    selesai.substring(0, selesai.length() - 3);
-
-                    Map<String, Object> room = (Map<String, Object>) item.get("id_ruang");
-                    Map<String, Object> detail = (Map<String, Object>) item.get("kd_kls_sc");
-                    List<Object> lecturers = (List<Object>) detail.get("pengajar");
-
-                    message += "\n" + mulai + " - " + selesai + " -> " + (String) detail.get("nm_kls")
-                            + " at " + room.get("nm_ruang") + " with ";
-
-                    for (int i = 0; i < lecturers.size(); i++) {
-                        Map<String, Object> lecturer = (Map<String, Object>) lecturers.get(i);
-                        message += (i > 0 ? " and " : "") + lecturer.get("nama");
-                    }
-                }
-            } else {
-                message += "\nHmm... there are no class that you must attend on that day...";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (schedule == null) {
             return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
                     "connection issues so I can't connect to Fasilkom UI API server :( " +
                     "Please try again.");
+        } else {
+            message += schedule.toString();
         }
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
@@ -269,10 +231,6 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         return markupInline.setKeyboard(rowsInline);
-    }
-
-    private String translateDay(String enDay) {
-        return (String) EN_ID_DAYS.get(enDay);
     }
 
     private int getFirstYear(String npm) {
