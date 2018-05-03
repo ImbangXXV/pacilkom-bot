@@ -1,10 +1,7 @@
 package com.pacilkom.feats.siak.riwayat.comp;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class Transcript {
     private String subject;
@@ -79,13 +76,18 @@ public class Transcript {
                 + "\nGrade : " + getGrade();
     }
     public static Transcript convertJson(JSONObject json) {
-        JSONObject collClass = (JSONObject) json.get("kelas");
-        JSONObject subjectInfo = (JSONObject) collClass.get("nm_mk_cl");
-        JSONObject lecturer = (JSONObject) collClass.get("pengajar");
+        JSONObject collClass = json.getJSONObject("kelas");
+        JSONObject subjectInfo = collClass.getJSONObject("nm_mk_cl");
+        JSONArray lecturer = collClass.getJSONArray("pengajar");
         int credit = subjectInfo == null ? 0 :
                 subjectInfo.getInt("jml_sks");
-        String lectName = lecturer == null ? "No Data" :
-                lecturer.getString("nama");
+        String lectName = "";
+        for (int i = 0;i < lecturer.length();i++) {
+            JSONObject lect = lecturer.getJSONObject(i);
+            lectName += lect.isNull("nama") ? "Unidentified"
+                    : lect.getString("nama");
+            lectName += i < lecturer.length() -1 ? ", " : "";
+        }
         return new Transcript(subjectInfo.getString("nm_mk"),
               lectName, credit, json.getInt("tahun"),
                 json.getInt("term"), json.getString("nilai"));
