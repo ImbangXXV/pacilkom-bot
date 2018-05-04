@@ -5,6 +5,7 @@ import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
 import com.pacilkom.feats.siak.riwayat.api.AcademicRecord;
 import com.pacilkom.feats.siak.riwayat.api.ProgramInfo;
+import com.pacilkom.feats.siak.riwayat.comp.GradeMapper;
 import com.pacilkom.feats.siak.riwayat.comp.Transcript;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -136,7 +137,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> summarize(Map<String, String> params) throws IOException, SQLException {
+    private BotApiMethod<? extends Serializable> summarize(Map<String,
+            String> params) throws IOException, SQLException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
         String message = "All right, your academic record on academic year "
@@ -151,6 +153,17 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         if (transcripts.size() > 0) {
             message += transcripts.stream().map(t -> t.toString())
                     .collect(Collectors.joining("\n\n"));
+            int totalSks = transcripts.stream()
+                    .mapToInt(Transcript::getCredit).sum();
+            double totalScore = transcripts.stream()
+                    .filter(t -> !t.getGrade().equals("N") && t.getCredit() > 0)
+                    .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade()))
+                    .sum();
+            message += "Total SKS : " + totalSks
+                    + "\nYour IP : " + totalScore
+                    + "\nPlease note that some of the subjects are not included"
+                    + " due to incomplete informations.";
+
         } else {
             message += "\nIt seems you have no record on academic year " + year
             + " term " + term + "...";
@@ -169,7 +182,6 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
 
     }
-
 
     private BotApiMethod<? extends Serializable> createMethodInstance
             (Map<String, String> params, String message, InlineKeyboardMarkup keyboard) {
