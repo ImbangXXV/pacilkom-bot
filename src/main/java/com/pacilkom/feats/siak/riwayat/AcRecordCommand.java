@@ -277,7 +277,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("<< Go Back")
-                .setCallbackData("/record " + params.get("year")));
+                .setCallbackData("/record " + params.get("year") + " " + params.get("term")));
         row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
 
         return response;
