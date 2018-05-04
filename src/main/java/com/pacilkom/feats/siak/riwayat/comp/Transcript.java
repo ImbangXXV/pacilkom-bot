@@ -76,20 +76,27 @@ public class Transcript {
                 + "\nGrade : " + getGrade();
     }
     public static Transcript convertJson(JSONObject json) {
-        JSONObject collClass = json.getJSONObject("kelas");
-        JSONObject subjectInfo = collClass.getJSONObject("nm_mk_cl");
-        JSONArray lecturer = collClass.getJSONArray("pengajar");
-        int credit = subjectInfo == null ? 0 :
-                subjectInfo.getInt("jml_sks");
+        JSONObject collClass = json.isNull("kelas") ?
+                null : json.getJSONObject("kelas");
+        JSONObject subjectInfo = collClass == null ?
+                null : collClass.getJSONObject("nm_mk_cl");
+        JSONArray lecturer = collClass == null ?
+                null : collClass.getJSONArray("pengajar");
+        int credit = subjectInfo == null ?
+                0 : subjectInfo.getInt("jml_sks");
+        String subjectName = subjectInfo == null ?
+                "Unidentified" : subjectInfo.getString("nama");
         String lectName = "";
-        for (int i = 0;i < lecturer.length();i++) {
-            JSONObject lect = lecturer.getJSONObject(i);
-            lectName += lect.isNull("nama") ? "Unidentified"
-                    : lect.getString("nama");
-            lectName += i < lecturer.length() -1 ? ", " : "";
+        if (lecturer != null) {
+            for (int i = 0;i < lecturer.length();i++) {
+                JSONObject lect = lecturer.getJSONObject(i);
+                lectName += lect.isNull("nama") ? "Unidentified"
+                        : lect.getString("nama");
+                lectName += i < lecturer.length() -1 ? ", " : "";
+            }
         }
-        return new Transcript(subjectInfo.getString("nm_mk"),
-              lectName, credit, json.getInt("tahun"),
-                json.getInt("term"), json.getString("nilai"));
+        return new Transcript(subjectName, lectName, credit,
+                json.getInt("tahun"), json.getInt("term"),
+                json.getString("nilai"));
     }
 }
