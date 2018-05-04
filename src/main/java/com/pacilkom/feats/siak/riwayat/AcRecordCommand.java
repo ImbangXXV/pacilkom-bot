@@ -15,7 +15,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,10 +150,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         }
         row.add(new InlineKeyboardButton().setText("<< Back")
                 .setCallbackData("/record "));
-
         return response;
     }
-
+    
     private BotApiMethod<? extends Serializable> courseResponse(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
@@ -212,8 +210,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
         message += transcript.toString();
 
-        message += "\n\nPlease note that some of the subjects are not included"
-                + " due to incomplete information.";
+        message += "\n\nWell there might be some missing information..."
+                    + "\nProbably becaouse our resource's restriction or ";
 
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 

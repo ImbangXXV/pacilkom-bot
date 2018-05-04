@@ -80,7 +80,7 @@ public class Transcript {
     }
 
     public String toString() {
-        return "Subject : " + getSubject()
+        return "Course : " + getSubject()
                 + "\nLecturer : " + getLecturer()
                 + "\nYear : " + getYear()
                 + "\nTerm : " + getTerm()
