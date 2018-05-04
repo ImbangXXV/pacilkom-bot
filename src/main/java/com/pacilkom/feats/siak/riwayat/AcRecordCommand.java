@@ -148,7 +148,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
     }
 
     private BotApiMethod<? extends Serializable> summarize(Map<String,
-            String> params) throws IOException, SQLException {
+            String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
         String message = "Alright, your academic record on academic year "
@@ -161,7 +161,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .collect(Collectors.toList());
 
         if (transcripts.size() > 0) {
-            message += "Course(s) taken :\n";
+            message += "Course(s) taken (credit unit(s)) :\n";
             message += transcripts.stream().map(t ->
                     String.format("%s (%d)",t.getSubject(), t.getCredit()))
                     .collect(Collectors.joining("\n"));
