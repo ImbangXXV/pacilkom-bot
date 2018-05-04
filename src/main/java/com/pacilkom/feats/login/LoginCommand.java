@@ -1,5 +1,6 @@
 package com.pacilkom.feats.login;
 
+import com.pacilkom.csuilogin.Encryptor;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;

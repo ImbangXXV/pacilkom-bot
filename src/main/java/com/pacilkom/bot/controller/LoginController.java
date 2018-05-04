@@ -1,7 +1,7 @@
 package com.pacilkom.bot.controller;
 
-import com.pacilkom.csuilogin.SessionDatabase;
-import com.pacilkom.feats.login.Encryptor;
+import com.pacilkom.csuilogin.DatabaseController;
+import com.pacilkom.csuilogin.Encryptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -45,7 +45,7 @@ public class LoginController {
             model.addAttribute("id", user_id);
             access_token = getAccessToken(username, password);
             if (access_token != null) {
-                SessionDatabase.getInstance().createSession(user_id, access_token);
+                DatabaseController.createSession(user_id, access_token);
                 model.addAttribute("success", true);
                 return "login-confirm";
             }
@@ -56,7 +56,7 @@ public class LoginController {
         return "login-confirm";
     }
 
-    private String getAccessToken(String username, String password) throws Exception {
+    private static String getAccessToken(String username, String password) throws Exception {
         HttpClient httpclient = HttpClients.createDefault();
         HttpPost httppost = new HttpPost("https://akun.cs.ui.ac.id/oauth/token/");
 

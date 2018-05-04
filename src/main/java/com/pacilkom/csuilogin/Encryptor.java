@@ -1,4 +1,4 @@
-package com.pacilkom.feats.login;
+package com.pacilkom.csuilogin;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
