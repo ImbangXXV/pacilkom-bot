@@ -168,7 +168,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
         } else {
             message += "\nIt seems you have no record on academic year " + year
-            + " term " + term + "...";
+                    + " term " + term + "...";
         }
 
 

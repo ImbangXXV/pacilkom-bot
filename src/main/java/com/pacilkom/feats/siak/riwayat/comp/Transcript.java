@@ -87,7 +87,7 @@ public class Transcript {
                 + "\nCredit : " + getCredit()
                 + "\nGrade : " + getGrade();
     }
-    
+
     public static Transcript convertJson(JSONObject json) {
         JSONObject collClass = json.getJSONObject("kelas");
         JSONObject subjectInfo = collClass.getJSONObject("nm_mk_cl");
@@ -112,5 +112,4 @@ public class Transcript {
                 json.getInt("term"), json.getString("nilai"));
     }
 }
-
 
