@@ -121,7 +121,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
     private BotApiMethod<? extends Serializable> termResponse(Map<String, String> params) {
         String message = "Now that you chose the year of " + params.get("year") +
-                ", you should choose which term now (1 = odd, 2 = even)";
+                ", you should choose which term now (1 = odd, 2 = even, 3 = short)";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
@@ -131,11 +131,20 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("1")
                 .setCallbackData("/record " + params.get("year") + " 1"));
-        row.add(new InlineKeyboardButton().setText("2")
-                .setCallbackData("/record " + params.get("year") + " 2"));
+
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        int currYear = Calendar.getInstance().get(Calendar.YEAR);
+        int attendYear = Integer.parseInt(params.get("year"));
+
+        if (attendYear < currYear || month < 7) {
+            row.add(new InlineKeyboardButton().setText("2")
+                    .setCallbackData("/record " + params.get("year") + " 2"));
+        } if (attendYear < currYear || month < 8) {
+            row.add(new InlineKeyboardButton().setText("3")
+                    .setCallbackData("/record " + params.get("year") + " 3"));
+        }
         row.add(new InlineKeyboardButton().setText("<< Back")
                 .setCallbackData("/record "));
-
         return response;
     }
 
