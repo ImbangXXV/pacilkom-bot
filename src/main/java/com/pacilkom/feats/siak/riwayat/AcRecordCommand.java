@@ -152,20 +152,14 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .setCallbackData("/record "));
         return response;
     }
-    
+
     private BotApiMethod<? extends Serializable> courseResponse(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
-        String message = "Kay, you chose the year of " + params.get("year")
-                + " term " + params.get("term") + ". Now, you can either choose "
-                + " the specific course you'd like to see or just summarize the entire"
-                + " semester by choosing Summarize button.";
+        String message = "";
 
         InlineKeyboardMarkup buttons = createKeyboardInstance();
-
-        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
-                message, buttons);
 
         List<Transcript> transcripts = AcademicRecord
                 .getAllTranscript(Integer.parseInt(params.get("user_id")))
@@ -174,6 +168,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
         List<InlineKeyboardButton> row = null;
         if (transcripts.size() > 0) {
+            message += "Kay, you chose the year of " + params.get("year")
+                    + " term " + params.get("term") + ". Now, you can either choose "
+                    + " the specific course you'd like to see or just summarize the entire"
+                    + " semester by choosing Summarize button.";
             for (Transcript script : transcripts) {
                 row = new ArrayList<>();
                 row.add(new InlineKeyboardButton().setText(script.getSubject())
@@ -187,6 +185,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                             + " " + params.get("term") + " sum"));
             buttons.getKeyboard().add(row);
 
+        } else {
+            message += "\nIt seems you have no record on academic year " + year
+                    + " term " + term + "...";
         }
         row = new ArrayList<>();
         row.add(new InlineKeyboardButton().setText("<< Back")
@@ -194,6 +195,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         row.add(new InlineKeyboardButton()
                 .setText("<< I'm Done!").setCallbackData("banish"));
         buttons.getKeyboard().add(row);
+
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
 
         return response;
     }
