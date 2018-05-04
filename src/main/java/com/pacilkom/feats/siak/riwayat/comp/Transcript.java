@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Transcript {
+    private int id;
     private String subject;
     private String lecturer;
     private int credit;
@@ -11,14 +12,23 @@ public class Transcript {
     private int term;
     private String grade;
 
-    public Transcript(String subject, String lecturer, int credit,
+    public Transcript(int id, String subject, String lecturer, int credit,
                       int year, int term, String grade) {
+        this.id = id;
         this.subject = subject;
         this.lecturer = lecturer;
         this.credit = credit;
         this.year = year;
         this.term = term;
         this.grade = grade;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSubject() {
@@ -72,9 +82,12 @@ public class Transcript {
     public String toString() {
         return "Subject : " + getSubject()
                 + "\nLecturer : " + getLecturer()
+                + "\nYear : " + getYear()
+                + "\nTerm : " + getTerm()
                 + "\nCredit : " + getCredit()
                 + "\nGrade : " + getGrade();
     }
+
     public static Transcript convertJson(JSONObject json) {
         JSONObject collClass = json.getJSONObject("kelas");
         JSONObject subjectInfo = collClass.getJSONObject("nm_mk_cl");
@@ -82,16 +95,21 @@ public class Transcript {
         int credit = subjectInfo == null ? 0 :
                 subjectInfo.getInt("jml_sks");
         String lectName = "";
-        for (int i = 0;i < lecturer.length();i++) {
-            JSONObject lect = lecturer.getJSONObject(i);
-            lectName += lect.isNull("nama") ? "Unidentified"
-                    : lect.getString("nama");
-            lectName += i < lecturer.length() -1 ? ", " : "";
+        if (lecturer == null) {
+            lectName = "Unidentified";
+        } else {
+            for (int i = 0;i < lecturer.length();i++) {
+                JSONObject lect = lecturer.getJSONObject(i);
+                lectName += lect.isNull("nama") ? "Unidentified"
+                        : lect.getString("nama");
+                lectName += i < lecturer.length() -1 ? ", " : "";
+            }
         }
-        return new Transcript(subjectInfo.getString("nm_mk"),
+
+        return new Transcript(collClass.getInt("kd_kls"),
+                subjectInfo.getString("nm_mk"),
                 lectName, credit, json.getInt("tahun"),
                 json.getInt("term"), json.getString("nilai"));
     }
 }
-
 
