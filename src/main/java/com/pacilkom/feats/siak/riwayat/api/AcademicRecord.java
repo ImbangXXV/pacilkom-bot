@@ -25,7 +25,9 @@ public class AcademicRecord {
         JSONArray json = getJson(userId);
         for (int i = 0; i < json.length(); i++) {
             JSONObject obj = json.getJSONObject(i);
-            transcripts.add(Transcript.convertJson(obj));
+            if (!obj.isNull("kelas")) {
+                transcripts.add(Transcript.convertJson(obj));
+            }
         }
         return transcripts;
     }
