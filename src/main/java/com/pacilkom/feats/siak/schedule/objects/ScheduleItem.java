@@ -46,6 +46,7 @@ public class ScheduleItem {
 
     public String toString() {
         String result = "\n" + startTime.toString() + " - " + endTime.toString() + "\n"
+                + "- Course: " + course.getSubject() + " (" + course.getClassCode() + ")\n"
                 + "- Class: " + course.getClassName() + "\n"
                 + "- Room: " + roomName + "\n"
                 + "- Lecturer(s):\n";
