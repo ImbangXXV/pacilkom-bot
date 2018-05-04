@@ -159,10 +159,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     .mapToInt(Transcript::getCredit).sum();
             double totalScore = transcripts.stream()
                     .filter(t -> !t.getGrade().equals("N") && t.getCredit() > 0)
-                    .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade()))
+                    .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
                     .sum();
             message += "Total SKS : " + totalSks
-                    + "\nYour IP : " + totalScore
+                    + "\nYour IP : " + (totalScore / totalSks);
                     + "\nPlease note that some of the subjects are not included"
                     + " due to incomplete informations.";
 

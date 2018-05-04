@@ -36,8 +36,8 @@ public class AcademicRecord {
         Map<String, Object> data = LoginVerifier.getData(userId);
         String result = "";
         URL url = new URL(API_LINK + data.get("identity_number")
-        + "/riwayat/?access_token=" + data.get("access_token")
-        + "&client_id=" + CLIENT_ID);
+                + "/riwayat/?access_token=" + data.get("access_token")
+                + "&client_id=" + CLIENT_ID);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -52,3 +52,5 @@ public class AcademicRecord {
     }
 
 }
+
+
