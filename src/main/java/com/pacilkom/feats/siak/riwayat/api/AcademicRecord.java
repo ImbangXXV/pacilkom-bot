@@ -37,7 +37,7 @@ public class AcademicRecord {
         String result = "";
         URL url = new URL(API_LINK + data.get("identity_number")
                 + "/riwayat/?access_token=" + data.get("access_token")
-                + "&client_id=" + CLIENT_ID);
+                + "&client_id=" + CLIENT_ID + "&format=json");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -52,5 +52,3 @@ public class AcademicRecord {
     }
 
 }
-
-

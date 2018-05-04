@@ -162,7 +162,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
                     .sum();
             message += "Total SKS : " + totalSks
-                    + "\nYour IP : " + (totalScore / totalSks);
+                    + "\nYour IP : " + (totalScore / totalSks)
                     + "\nPlease note that some of the subjects are not included"
                     + " due to incomplete informations.";
 
