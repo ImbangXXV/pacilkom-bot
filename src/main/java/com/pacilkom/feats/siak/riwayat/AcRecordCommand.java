@@ -143,7 +143,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
             String> params) throws IOException, SQLException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
-        String message = "All right, your academic record on academic year "
+        String message = "Alright, your academic record on academic year "
                 + params.get("year") + " term " + params.get("term") + ":\n\n";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
@@ -153,7 +153,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .collect(Collectors.toList());
 
         if (transcripts.size() > 0) {
-            message += transcripts.stream().map(t -> t.toString())
+            message += transcripts.stream().map(t -> t.getSubject())
                     .collect(Collectors.joining("\n\n"));
             int totalSks = transcripts.stream()
                     .mapToInt(Transcript::getCredit).sum();
@@ -161,10 +161,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     .filter(t -> !t.getGrade().equals("N") && t.getCredit() > 0)
                     .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
                     .sum();
-            message += "Total SKS : " + totalSks
+            message += "\n\nTotal Credit : " + totalSks
                     + "\nYour IP : " + (totalScore / totalSks)
                     + "\nPlease note that some of the subjects are not included"
-                    + " due to incomplete informations.";
+                    + " due to incomplete information.";
 
         } else {
             message += "\nIt seems you have no record on academic year " + year
