@@ -135,10 +135,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         int currYear = Calendar.getInstance().get(Calendar.YEAR);
         int termYear = Integer.parseInt(params.get("year"));
 
-        if (termYear < currYear && month > 7) {
+        if (termYear < currYear - 1 || month > 7) {
             row.add(new InlineKeyboardButton().setText("2")
                     .setCallbackData("/record " + params.get("year") + " 2"));
-        } if (termYear < currYear && month > 9) {
+        } if (termYear < currYear - 1 || month > 9) {
             row.add(new InlineKeyboardButton().setText("3")
                     .setCallbackData("/record " + params.get("year") + " 3"));
         }
