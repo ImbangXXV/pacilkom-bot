@@ -66,9 +66,11 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         }
 
         String[] params = text.split(" ");
-        String[] keys = {"year", "term"};
+        String[] keys = {"year", "term", "subject"};
 
         switch (params.length) {
+            case 3:
+                result.put(keys[2], params[2]);
             case 2:
                 result.put(keys[1], params[1]);
             case 1:
