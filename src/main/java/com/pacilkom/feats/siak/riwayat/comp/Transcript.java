@@ -89,7 +89,9 @@ public class Transcript {
             lectName += i < lecturer.length() -1 ? ", " : "";
         }
         return new Transcript(subjectInfo.getString("nm_mk"),
-              lectName, credit, json.getInt("tahun"),
+                lectName, credit, json.getInt("tahun"),
                 json.getInt("term"), json.getString("nilai"));
     }
 }
+
+
