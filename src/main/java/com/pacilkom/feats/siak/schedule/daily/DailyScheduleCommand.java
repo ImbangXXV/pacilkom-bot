@@ -1,10 +1,10 @@
 package com.pacilkom.feats.siak.schedule.daily;
 
-import com.pacilkom.csuilogin.SessionDatabase;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
-import org.json.JSONArray;
+import com.pacilkom.feats.siak.schedule.api.ScheduleAPI;
+import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import org.json.JSONObject;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -12,42 +12,57 @@ import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 
-import static com.pacilkom.feats.login.LoginVerifier.CLIENT_ID;
 
 public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotCommand {
+
     private static final String ERROR_MESSAGE = "Daily schedule command's usage is:\n" +
             "/dailyschedule [year] [term] [day]";
     private static final Map<String, Object> EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","
             + "\"Tuesday\":\"Selasa\",\"Wednesday\":\"Rabu\",\"Thursday\":\"Kamis\","
             + "\"Friday\":\"Jumat\",\"Saturday\":\"Sabtu\"}").toMap();
 
+    /**
+     * AuthBotCommand interface's execute method. It returns the AuthEditableBotCommand execute method
+     * but with null on messageId and text.
+     * @param chatId = current user's chat ID
+     * @param userId = current user's integer user ID
+     * @return SendMessage or EditMessageText or DeleteMessage response;
+     * @throws Exception
+     */
     @Override
     public BotApiMethod<? extends Serializable> execute(Long chatId, Integer userId) throws Exception {
         return execute(chatId, userId, null, null);
     }
 
+    /**
+     * AuthEditableBotCoomand interface's execute method. This is the main execute method.
+     * @param chatId = current user's chat ID
+     * @param userId = current user's integer user ID
+     * @param messageId = message
+     * @param text = parameters text
+     * @return SendMessage or EditMessageText or DeleteMessage response;
+     */
     @Override
     public BotApiMethod<? extends Serializable> execute(Long chatId, Integer userId,
                                                         Integer messageId, String text) {
+        // Check login fist
         Map<String, Object> loginData = LoginVerifier.getData(userId);
         if (loginData == null) {
             return new SendMessage(chatId, "Please login first to CSUI account " +
                     "using /login command");
         }
 
+        // Parse the text, then make a map of parameters
         Map<String, String> params = parseParameter(text);
         params.put("chat_id", chatId.toString());
         params.put("message_id", messageId == null ? null : messageId.toString());
         params.put("access_token", (String) loginData.get("access_token"));
         params.put("npm", (String) loginData.get("identity_number"));
 
+        // Determine the menu
         if (params.size() == 7) {
             return getDayResponse(params);
         } else if (params.size() == 6) {
@@ -61,13 +76,20 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return new SendMessage(chatId, ERROR_MESSAGE);
     }
 
+    /**
+     * Method to parse parameters from message text.
+     * @param text = message text
+     * @return Map of String key and String value
+     */
     private Map<String, String> parseParameter(String text) {
         Map<String, String> result = new HashMap<>();
 
+        // If the text is empty (for AuthEditableBotCommand) or null (for AuthBotCommand)
         if (text == null || text.isEmpty()) {
             return result;
         }
 
+        // Add new key value pair
         String[] params = text.split(" ");
         String[] keys = {"year", "term", "day"};
 
@@ -84,27 +106,33 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return result;
     }
 
+    /**
+     * The first menu which contains button of years or "current term".
+     * @param params = map that contains mandatory variables from text
+     * @return SendMessage or EditMessageText
+     */
     private BotApiMethod<? extends Serializable> getUniversalResponse(Map<String, String> params) {
+        // Add intro message and initiate inline keyboard
         String message = "Hi! To see your class schedule, choose the year first.. " +
                 "(or \"Current Term\" if you want to show your current term schedule.";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        // Initialize response method
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);
 
-        int firstYear = getFirstYear(params.get("access_token"), params.get("npm"));
-        if (firstYear < 0) {
-            return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
-                    "connection issues so I can't connect to Fasilkom UI API server :( " +
-                    "Please try again.");
-        }
+        // Check user's first year in college, based on first two digits of their ID number (NPM)
+        int firstYear = Integer.parseInt("20" + params.get("npm").substring(0, 2));
 
+        // Check current month and year
         int month = Calendar.getInstance().get(Calendar.MONTH);
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
+        // Make academic year buttons
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
-        for (int i = firstYear; (month < 8 && i < year) || (month >= 8 && i <= year); i++) {
+        for (int i = firstYear; ((month < 8 && i < year) || (month >= 8 && i <= year))
+                && i <= firstYear + 6; i++) {
             if ((i - firstYear) / 2 > 0 && (i = firstYear) % 2 == 0) {
                 row = new ArrayList<>();
                 buttons.getKeyboard().add(row);
@@ -114,12 +142,15 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
                     .setCallbackData("/dailyschedule " + i));
         }
 
+        // Make button for current term and I'm Done
         row = new ArrayList<>();
         buttons.getKeyboard().add(row);
 
         String currentTerm = "/dailyschedule ";
-        if (month < 8) {
+        if (month < 6) {
             currentTerm += (year - 1) + " 2";
+        } else if (month < 8) {
+            currentTerm += (year - 1) + " 3";
         } else {
             currentTerm += year + " 1";
         }
@@ -130,123 +161,108 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return response;
     }
 
+    /**
+     * The first menu which contains button of terms.
+     * @param params = map that contains mandatory variables from text
+     * @return SendMessage or EditMessageText
+     */
     private BotApiMethod<? extends Serializable> getYearResponse(Map<String, String> params) {
+        // Add intro message and initiate inline keyboard
         String message = "Okay... you choose academic year of " + params.get("year") +
                 ". Then you should choose the term now (1 = odd, 2 = even)";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        // Initialize response method
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);
 
+        // Make button for every term
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("1")
                 .setCallbackData("/dailyschedule " + params.get("year") + " 1"));
         row.add(new InlineKeyboardButton().setText("2")
                 .setCallbackData("/dailyschedule " + params.get("year") + " 2"));
+        row.add(new InlineKeyboardButton().setText("SP")
+                .setCallbackData("/dailyschedule " + params.get("year") + " 3"));
         row.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule "));
 
         return response;
     }
 
+    /**
+     * The first menu which contains button of days.
+     * @param params = map that contains mandatory variables from text
+     * @return SendMessage or EditMessageText
+     */
     private BotApiMethod<? extends Serializable> getTermResponse(Map<String, String> params) {
+        // Add intro message and initiate inline keyboard
         String message = "Okay... you choose academic year of " + params.get("year") + " and term "
                 + params.get("term") + ". Then you should choose the day now.";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
+        // Initialize response method
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);
 
+        // Initialize lists of keyboard buttons
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         List<InlineKeyboardButton> row3 = new ArrayList<>();
+        List<InlineKeyboardButton> curr;
         buttons.getKeyboard().add(row1);
         buttons.getKeyboard().add(row2);
         buttons.getKeyboard().add(row3);
 
-        row1.add(new InlineKeyboardButton()
-                .setText("Monday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Monday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Tuesday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Tuesday"));
-        row1.add(new InlineKeyboardButton()
-                .setText("Wednesday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Wednesday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Thursday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Thursday"));
-        row1.add(new InlineKeyboardButton()
-                .setText("Friday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Friday"));
-        row2.add(new InlineKeyboardButton()
-                .setText("Saturday").setCallbackData("/dailyschedule " + params.get("year") + " "
-                        + params.get("term") + " Saturday"));
+        // Make button for every days
+        String[] days = (String[]) ScheduleAPI.EN_ID_DAYS.keySet().toArray();
+        for (int i = 0; i < days.length; i++) {
+            if (i % 2 == 0) {
+                curr = row1;
+            } else {
+                curr = row2;
+            }
+
+            curr.add(new InlineKeyboardButton()
+                    .setText(days[i]).setCallbackData("/dailyschedule " + params.get("year") + " "
+                            + params.get("term") + " " + days[i]));
+        }
+
         row3.add(new InlineKeyboardButton().setText("<< Go Back")
                 .setCallbackData("/dailyschedule " + params.get("year")));
 
         return response;
     }
 
+    /**
+     * The first menu which contains schedule information for selected day, term, year, and NPM.
+     * @param params = map that contains mandatory variables from text
+     * @return SendMessage or EditMessageText
+     */
     private BotApiMethod<? extends Serializable> getDayResponse(Map<String, String> params) {
+        // Add intro message and initiate inline keyboard
         String message = "I get all the information I need.. Here are your schedule for "
                 + params.get("day") + " on academic year " + params.get("year") + " term "
                 + params.get("term") + ":\n";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
+        DaySchedule schedule = ScheduleAPI.getApiResponse(params.get("access_token"), params.get("npm"),
+                params.get("year"), params.get("term"), params.get("day"));
 
-        try {
-            URL url = new URL("https://api.cs.ui.ac.id/siakngcs/jadwal-list/" + params.get("year")
-                    + "/" + params.get("term") + "/" + translateDay(params.get("day"))
-                    + "/" + params.get("npm") + "/?access_token=" + params.get("access_token")
-                    + "&client_id=" + CLIENT_ID + "&format=json");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String result = "";
-
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result += line;
-            }
-
-            rd.close();
-            List<Object> json = new JSONArray(result).toList();
-
-            if (json.size() > 0) {
-                for (Object obj : json) {
-                    Map<String, Object> item = (Map<String, Object>) obj;
-                    String mulai = (String) item.get("jam_mulai");
-                    String selesai = (String) item.get("jam_selesai");
-                    mulai.substring(0, mulai.length() - 3);
-                    selesai.substring(0, selesai.length() - 3);
-
-                    Map<String, Object> room = (Map<String, Object>) item.get("id_ruang");
-                    Map<String, Object> detail = (Map<String, Object>) item.get("kd_kls_sc");
-                    List<Object> lecturers = (List<Object>) detail.get("pengajar");
-
-                    message += "\n" + mulai + " - " + selesai + " -> " + (String) detail.get("nm_kls")
-                            + " at " + room.get("nm_ruang") + " with ";
-
-                    for (int i = 0; i < lecturers.size(); i++) {
-                        Map<String, Object> lecturer = (Map<String, Object>) lecturers.get(i);
-                        message += (i > 0 ? " and " : "") + lecturer.get("nama");
-                    }
-                }
-            } else {
-                message += "\nHmm... there are no class that you must attend on that day...";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // Check for API response failure, if success, then convert DaySchedule to String
+        if (schedule == null) {
             return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
                     "connection issues so I can't connect to Fasilkom UI API server :( " +
                     "Please try again.");
+        } else {
+            message += schedule.toString();
         }
 
+        /// Initialize response method
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
                 message, buttons);
 
+        // Make button to go back or I'm Done (destruct message)
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("<< Go Back")
@@ -257,6 +273,13 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         return response;
     }
 
+    /**
+     * Method to create response method instance.
+     * @param params = map that contains mandatory variables from text
+     * @param message = text message that will be embedded in the response message
+     * @param keyboard = inline key
+     * @return SendMessage or EditMessageText
+     */
     private BotApiMethod<? extends Serializable> createMethodInstance
             (Map<String, String> params, String message, InlineKeyboardMarkup keyboard) {
         String chatId = params.get("chat_id");
@@ -270,38 +293,13 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         }
     }
 
+    /**
+     * Method to create new empty inline keyboard.
+     * @return InlineKeyboardMarkup
+     */
     private InlineKeyboardMarkup createKeyboardInstance() {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         return markupInline.setKeyboard(rowsInline);
-    }
-
-    private String translateDay(String enDay) {
-        return (String) EN_ID_DAYS.get(enDay);
-    }
-
-    private int getFirstYear(String accessToken, String npm) {
-        try {
-            URL url = new URL("https://api.cs.ui.ac.id/siakngcs/mahasiswa/" +
-                    "cari-info-program/" + npm + "/?access_token=" + accessToken + "&client_id=" +
-                    CLIENT_ID + "&format=json");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String result = "";
-
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result += line;
-            }
-
-            rd.close();
-            JSONObject json = new JSONObject(result);
-            return json.getInt("tahun_masuk");
-        } catch (Exception e) {
-            return -1;
-        }
-
     }
 }
