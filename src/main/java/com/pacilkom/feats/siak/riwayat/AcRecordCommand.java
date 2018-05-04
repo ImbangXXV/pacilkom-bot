@@ -96,12 +96,11 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     "Please try again.");
         }
 
-        int month = Calendar.getInstance().get(Calendar.MONTH);
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
-        for (int i = firstYear; (month < 8 && i < year) || (month >= 8 && i <= year); i++) {
+        for (int i = firstYear; i < year; i++) {
             if ((i - firstYear) / 2 > 0 && (i = firstYear) % 2 == 0) {
                 row = new ArrayList<>();
                 buttons.getKeyboard().add(row);
@@ -121,7 +120,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
     private BotApiMethod<? extends Serializable> termResponse(Map<String, String> params) {
         String message = "Now that you chose the year of " + params.get("year") +
-                ", you should choose which term now (1 = odd, 2 = even)";
+                ", you should choose which term now (1 = odd, 2 = even, 3 = short)";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
@@ -131,16 +130,25 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("1")
                 .setCallbackData("/record " + params.get("year") + " 1"));
-        row.add(new InlineKeyboardButton().setText("2")
-                .setCallbackData("/record " + params.get("year") + " 2"));
+
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        int currYear = Calendar.getInstance().get(Calendar.YEAR);
+        int termYear = Integer.parseInt(params.get("year"));
+
+        if (termYear < currYear - 1 || month > 7) {
+            row.add(new InlineKeyboardButton().setText("2")
+                    .setCallbackData("/record " + params.get("year") + " 2"));
+        } if (termYear < currYear - 1 || month > 9) {
+            row.add(new InlineKeyboardButton().setText("3")
+                    .setCallbackData("/record " + params.get("year") + " 3"));
+        }
         row.add(new InlineKeyboardButton().setText("<< Back")
                 .setCallbackData("/record "));
-
         return response;
     }
 
     private BotApiMethod<? extends Serializable> summarize(Map<String,
-            String> params) throws IOException, SQLException {
+            String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
         String message = "Alright, your academic record on academic year "
@@ -153,8 +161,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .collect(Collectors.toList());
 
         if (transcripts.size() > 0) {
-            message += transcripts.stream().map(t -> t.getSubject())
-                    .collect(Collectors.joining("\n\n"));
+            message += "Course(s) taken (credit unit(s)) :\n";
+            message += transcripts.stream().map(t ->
+                    String.format("%s (%d)",t.getSubject(), t.getCredit()))
+                    .collect(Collectors.joining("\n"));
             int totalSks = transcripts.stream()
                     .mapToInt(Transcript::getCredit).sum();
             double totalScore = transcripts.stream()
@@ -162,14 +172,15 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
                     .sum();
             message += "\n\nTotal Credit : " + totalSks
-                    + "\nYour IP : " + (totalScore / totalSks)
-                    + "\nPlease note that some of the subjects are not included"
-                    + " due to incomplete information.";
+                    + String.format("\nYour IP : %.2f", (totalScore / totalSks));
 
         } else {
             message += "\nIt seems you have no record on academic year " + year
                     + " term " + term + "...";
         }
+
+        message += "\n\nPlease note that some of the subjects are not included"
+                    + " due to incomplete information.";
 
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
