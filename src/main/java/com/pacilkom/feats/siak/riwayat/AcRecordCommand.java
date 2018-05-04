@@ -153,8 +153,10 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .collect(Collectors.toList());
 
         if (transcripts.size() > 0) {
-            message += transcripts.stream().map(t -> t.getSubject())
-                    .collect(Collectors.joining("\n\n"));
+            message += "Course(s) taken :\n";
+            message += transcripts.stream().map(t ->
+                    String.format("%s (%d)",t.getSubject(), t.getCredit()))
+                    .collect(Collectors.joining("\n"));
             int totalSks = transcripts.stream()
                     .mapToInt(Transcript::getCredit).sum();
             double totalScore = transcripts.stream()
@@ -162,14 +164,15 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
                     .sum();
             message += "\n\nTotal Credit : " + totalSks
-                    + "\nYour IP : " + (totalScore / totalSks)
-                    + "\nPlease note that some of the subjects are not included"
-                    + " due to incomplete information.";
+                    + String.format("\nYour IP : %.2f", (totalScore / totalSks));
 
         } else {
             message += "\nIt seems you have no record on academic year " + year
                     + " term " + term + "...";
         }
+
+        message += "\n\nPlease note that some of the subjects are not included"
+                    + " due to incomplete information.";
 
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
