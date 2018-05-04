@@ -6,7 +6,7 @@ public class SessionDatabase {
     private static SessionDatabase instance = new SessionDatabase();
     private Connection c;
     private static final String DATABASE_URI = "jdbc:postgresql://ec2-54-75-239-237"
-            + ".eu-west-1.compute.amazonaws.com:5432/d78hijtf1urdja?sslmode=require&ssl=true&"
+                + ".eu-west-1.compute.amazonaws.com:5432/d78hijtf1urdja?sslmode=require&ssl=true&"
             + "sslfactory=org.postgresql.ssl.NonValidatingFactory";
     private static final String DATABASE_USER = "giibaqgklxangd";
     private static final String DATABASE_PASSWORD = "1019e764eb3232833c55a4acca089f9f"
