@@ -47,8 +47,13 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         params.put("user_id", String.valueOf(userId));
 
         switch(params.size()) {
+            case 6:
+                if (params.get("id").equals("sum")) {
+                    return summarize(params);
+                }
+                return inform(params);
             case 5:
-                return summarize(params);
+                return courseResponse(params);
             case 4:
                 return termResponse(params);
             case 3:
@@ -66,7 +71,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         }
 
         String[] params = text.split(" ");
-        String[] keys = {"year", "term", "subject"};
+        String[] keys = {"year", "term", "id"};
 
         switch (params.length) {
             case 3:
@@ -113,7 +118,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         row = new ArrayList<>();
         buttons.getKeyboard().add(row);
 
-        row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
+        row.add(new InlineKeyboardButton()
+                .setText("<< I'm Done!")
+                .setCallbackData("banish"));
 
         return response;
     }
@@ -144,7 +151,85 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         }
         row.add(new InlineKeyboardButton().setText("<< Back")
                 .setCallbackData("/record "));
+
         return response;
+    }
+
+    private BotApiMethod<? extends Serializable> courseResponse(Map<String,
+            String> params) throws IOException {
+        int year = Integer.parseInt(params.get("year"));
+        int term = Integer.parseInt(params.get("term"));
+        String message = "Kay, you chose the year of " + params.get("year")
+                + " term " + params.get("term") + ". Now, you can either choose "
+                + " the specific course you'd like to see or just summarize the entire"
+                + " semester by choosing Summarize button.";
+
+        InlineKeyboardMarkup buttons = createKeyboardInstance();
+
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
+
+        List<Transcript> transcripts = AcademicRecord
+                .getAllTranscript(Integer.parseInt(params.get("user_id")))
+                .stream().filter(t -> t.getTerm() == term && t.getYear() == year)
+                .collect(Collectors.toList());
+
+        List<InlineKeyboardButton> row = null;
+        if (transcripts.size() > 0) {
+            for (Transcript script : transcripts) {
+                row = new ArrayList<>();
+                row.add(new InlineKeyboardButton().setText(script.getSubject())
+                        .setCallbackData("/record " + params.get("year")
+                                + " " + params.get("term") + " " + script.getId()));
+                buttons.getKeyboard().add(row);
+            }
+            row = new ArrayList<>();
+            row.add(new InlineKeyboardButton().setText("Summarize Semester")
+                    .setCallbackData("/record " + params.get("year")
+                            + " " + params.get("term") + " sum"));
+            buttons.getKeyboard().add(row);
+
+        }
+        row = new ArrayList<>();
+        row.add(new InlineKeyboardButton().setText("<< Back")
+                .setCallbackData("/record " + params.get("year")));
+        row.add(new InlineKeyboardButton()
+                .setText("<< I'm Done!").setCallbackData("banish"));
+        buttons.getKeyboard().add(row);
+
+        return response;
+    }
+
+    private BotApiMethod<? extends Serializable> inform(Map<String,
+            String> params) throws IOException {
+        int courseId = Integer.parseInt(params.get("id"));
+        int userId = Integer.parseInt(params.get("user_id"));
+        Transcript transcript = AcademicRecord.getAllTranscript(userId)
+                .stream().filter(t -> t.getId() == courseId).findAny().get();
+
+        String message = "This is it! There record of the course you've"
+                + " been waiting for!\n\n";
+
+        message += transcript.toString();
+
+        message += "\n\nPlease note that some of the subjects are not included"
+                + " due to incomplete information.";
+
+        InlineKeyboardMarkup buttons = createKeyboardInstance();
+
+        BotApiMethod<? extends Serializable> response = createMethodInstance(params,
+                message, buttons);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        buttons.getKeyboard().add(row);
+        row.add(new InlineKeyboardButton().setText("<< Go Back")
+                .setCallbackData("/record " + params.get("year")
+                        + " " + params.get("term")));
+        row.add(new InlineKeyboardButton()
+                .setText("<< I'm Done!").setCallbackData("banish"));
+
+        return response;
+
     }
 
     private BotApiMethod<? extends Serializable> summarize(Map<String,
