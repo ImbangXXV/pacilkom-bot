@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import static com.pacilkom.feats.login.LoginVerifier.CLIENT_ID;
+import static com.pacilkom.bot.PacilkomBot.CSUI_CLIENT_ID;
 
 public class ScheduleAPI {
     public static final JSONObject EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","
@@ -24,7 +24,7 @@ public class ScheduleAPI {
             URL url = new URL("https://api.cs.ui.ac.id/siakngcs/jadwal-list/" + year
                     + "/" + term + "/" + translateDay(day)
                     + "/" + npm + "/?access_token=" + accessToken
-                    + "&client_id=" + CLIENT_ID + "&format=json");
+                    + "&client_id=" + CSUI_CLIENT_ID + "&format=json");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));

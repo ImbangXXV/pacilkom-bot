@@ -1,22 +1,23 @@
 package com.pacilkom.csuilogin;
 
+import com.pacilkom.bot.PacilkomBot;
+
 import java.sql.*;
 
 public class SessionDatabase {
     private static SessionDatabase instance = new SessionDatabase();
     private Connection c;
-    private static final String DATABASE_URI = "jdbc:postgresql://ec2-54-75-239-237"
-                + ".eu-west-1.compute.amazonaws.com:5432/d78hijtf1urdja?sslmode=require&ssl=true&"
-            + "sslfactory=org.postgresql.ssl.NonValidatingFactory";
-    private static final String DATABASE_USER = "giibaqgklxangd";
-    private static final String DATABASE_PASSWORD = "1019e764eb3232833c55a4acca089f9f"
-            + "214af13bfba09b591573aec9c70eddb8";
 
     private SessionDatabase() {
         try {
             Class.forName("org.postgresql.Driver");
 
-            c = DriverManager.getConnection(DATABASE_URI, DATABASE_USER, DATABASE_PASSWORD);
+            // Parsing database url
+            String url = "jdbc:postgresql://" + PacilkomBot.DATABASE_URL.split("@")[1];
+            String user = PacilkomBot.DATABASE_URL.split(":")[1].substring(2);
+            String pass = PacilkomBot.DATABASE_URL.split(":")[2].split("@")[0];
+
+            c = DriverManager.getConnection(url, user, pass);
             try {
                 createBotUserTable();
             } catch (SQLException e) {
