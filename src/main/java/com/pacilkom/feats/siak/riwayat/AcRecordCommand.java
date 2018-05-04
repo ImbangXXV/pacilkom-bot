@@ -153,7 +153,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> courseResponse(Map<String, String> params) throws IOException {
+    private BotApiMethod<? extends Serializable> courseResponse(Map<String,
+            String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
         String message = "";
@@ -214,8 +215,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         message += transcript.toString();
 
         message += "\n\nWell there might be some missing information..."
-                    + "\nProbably becaouse our resource's restriction or "
-                    + "there's no such data on their database...";
+                    + "\nProbably because our resource's restriction or "
+                    + "data unavailability";
 
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
@@ -276,7 +277,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
         row.add(new InlineKeyboardButton().setText("<< Go Back")
-                .setCallbackData("/record " + params.get("year")));
+                .setCallbackData("/record " + params.get("year") + " " + params.get("term")));
         row.add(new InlineKeyboardButton().setText("<< I'm Done!").setCallbackData("banish"));
 
         return response;
