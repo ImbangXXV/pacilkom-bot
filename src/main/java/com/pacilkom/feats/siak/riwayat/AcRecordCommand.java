@@ -215,7 +215,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         message += transcript.toString();
 
         message += "\n\nWell there might be some missing information..."
-                    + "\nProbably becaouse our resource's restriction or ";
+                    + "\nProbably because our resource's restriction or "
+                    + "data unavailability";
 
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
