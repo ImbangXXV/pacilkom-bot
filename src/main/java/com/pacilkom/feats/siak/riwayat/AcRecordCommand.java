@@ -96,12 +96,11 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     "Please try again.");
         }
 
-        int month = Calendar.getInstance().get(Calendar.MONTH);
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         buttons.getKeyboard().add(row);
-        for (int i = firstYear; (month < 8 && i < year) || (month >= 8 && i <= year); i++) {
+        for (int i = firstYear; i < year; i++) {
             if ((i - firstYear) / 2 > 0 && (i = firstYear) % 2 == 0) {
                 row = new ArrayList<>();
                 buttons.getKeyboard().add(row);
@@ -134,12 +133,12 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
         int month = Calendar.getInstance().get(Calendar.MONTH);
         int currYear = Calendar.getInstance().get(Calendar.YEAR);
-        int attendYear = Integer.parseInt(params.get("year"));
+        int termYear = Integer.parseInt(params.get("year"));
 
-        if (attendYear < currYear || month < 7) {
+        if (termYear < currYear && month > 7) {
             row.add(new InlineKeyboardButton().setText("2")
                     .setCallbackData("/record " + params.get("year") + " 2"));
-        } if (attendYear < currYear || month < 8) {
+        } if (termYear < currYear && month > 9) {
             row.add(new InlineKeyboardButton().setText("3")
                     .setCallbackData("/record " + params.get("year") + " 3"));
         }
