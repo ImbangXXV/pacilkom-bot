@@ -76,14 +76,11 @@ public class Transcript {
                 + "\nGrade : " + getGrade();
     }
     public static Transcript convertJson(JSONObject json) {
-        JSONObject collClass = json.isNull("kelas") ?
-                null : json.getJSONObject("kelas");
-        JSONObject subjectInfo = collClass == null ?
-                null : collClass.getJSONObject("nm_mk_cl");
-        JSONArray lecturer = collClass == null ?
-                null : collClass.getJSONArray("pengajar");
-        int credit = subjectInfo == null ?
-                0 : subjectInfo.getInt("jml_sks");
+        JSONObject collClass = json.getJSONObject("kelas");
+        JSONObject subjectInfo = collClass.getJSONObject("nm_mk_cl");
+        JSONArray lecturer = collClass.getJSONArray("pengajar");
+        int credit = subjectInfo == null ? 0 :
+                subjectInfo.getInt("jml_sks");
         String subjectName = subjectInfo == null ?
                 "Unidentified" : subjectInfo.getString("nama");
         String lectName = "";
@@ -94,6 +91,8 @@ public class Transcript {
                         : lect.getString("nama");
                 lectName += i < lecturer.length() -1 ? ", " : "";
             }
+        } else {
+            lectName += "Unidentified";
         }
         return new Transcript(subjectName, lectName, credit,
                 json.getInt("tahun"), json.getInt("term"),
