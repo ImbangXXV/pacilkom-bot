@@ -4,13 +4,14 @@ import com.pacilkom.csui.CSUIAcademic;
 import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import com.pacilkom.feats.siak.schedule.objects.ScheduleItem;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
 
 public class ScheduleAPI {
-    public static final JSONObject EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","
+    public static final JSONObject DAYS = new JSONObject("{\"Monday\":\"Senin\","
             + "\"Tuesday\":\"Selasa\",\"Wednesday\":\"Rabu\",\"Thursday\":\"Kamis\","
             + "\"Friday\":\"Jumat\",\"Saturday\":\"Sabtu\"}");
 
@@ -28,6 +29,10 @@ public class ScheduleAPI {
     }
 
     public static String translateDay(String dayName) {
-        return EN_ID_DAYS.getString(dayName);
+        try {
+            return DAYS.getString(dayName);
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }

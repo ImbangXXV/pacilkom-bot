@@ -61,7 +61,7 @@ public class CourseClass {
     }
 
     public String toString() {
-        String result = className + "(" + classCode + "):\n"
+        String result = className + " (" + classCode + "):\n"
                 + "- Course Name: " + subject + "\n"
                 + "- Credit: " + credit + " SKS\n"
                 + "- Lecturer(s):\n";
