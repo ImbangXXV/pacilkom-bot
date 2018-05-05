@@ -1,5 +1,6 @@
 package com.pacilkom.feats.login;
 
+import com.pacilkom.csuilogin.Encryptor;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -7,18 +8,21 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class LoginCommand implements AuthBotCommand {
     public SendMessage execute(Long chatId, Integer userId) {
-        String userName = LoginVerifier.verify(userId);
         SendMessage message;
+        Map<String, Object> loginData = LoginVerifier.getData(userId);
+
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
-        if (userName != null) {
+        if (loginData != null) {
             message = new SendMessage(chatId,
-                    "Kamu sudah login dengan akun CSUI: " + userName);
+                    "Kamu sudah login dengan akun CSUI: " + loginData.get("username")
+                            + " dengan role " + loginData.get("role"));
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
                     .setText("Switch Account")

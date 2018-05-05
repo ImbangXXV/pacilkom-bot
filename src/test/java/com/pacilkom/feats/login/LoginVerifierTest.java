@@ -1,7 +1,7 @@
-package com.pacilkom.bot.controller;
+package com.pacilkom.feats.login;
 
+import com.pacilkom.bot.controller.LoginController;
 import com.pacilkom.csuilogin.DatabaseController;
-import com.pacilkom.csuilogin.Encryptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,48 +12,49 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.springframework.ui.Model;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-@Controller
-public class LoginController {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-    @Autowired
-    private TelegramWebhookBot bot;
+public class LoginVerifierTest {
 
-    @RequestMapping(value = "/csui-login", method = RequestMethod.GET)
-    public String loginPage(@RequestParam("id") String enc_user_id, Model model) {
-        model.addAttribute("id", enc_user_id);
-        return "login-page";
+    String accessToken;
+
+    @Before
+    public void setUp() throws Exception {
+        accessToken = getAccessToken("muhammad.imbang", "aliceinwonderland25");
+        // Create session with valid accessToken
+        DatabaseController.createSession(-1,accessToken);
+        // Create session with invalid accessToken
+        DatabaseController.createSession(-2, "12345");
     }
 
-    @RequestMapping(value = "/csui-login/get-session", method = RequestMethod.POST)
-    public String loginConfirm(@RequestParam("id") String enc_user_id,
-                        @RequestParam("username") String username,
-                        @RequestParam("password") String password, Model model) {
-        String access_token;
-        int user_id = Integer.parseInt(Encryptor.decrypt(enc_user_id));
-        try {
-            model.addAttribute("id", user_id);
-            access_token = getAccessToken(username, password);
-            if (access_token != null) {
-                DatabaseController.createSession(user_id, access_token);
-                model.addAttribute("success", true);
-                return "login-confirm";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        model.addAttribute("success", false);
-        return "login-confirm";
+    @Test
+    public void verifyUserIdThatAlreadyExistsWithValidAccessToken() throws Exception{
+        Map<String, Object> loginData = LoginVerifier.getData(-1);
+        assertEquals(loginData.get("access_token"), accessToken);
+        assertEquals(loginData.get("role"), "mahasiswa");
+        assertEquals(loginData.get("identity_number"), "1606889502");
+        assertEquals(loginData.get("username"), "muhammad.imbang");
+    }
+
+    @Test
+    public void verifyUserIdThatAlreadyExistsWithInvalidAccessToken() throws Exception{
+        assertNull(LoginVerifier.getData(-2));
+    }
+
+    @Test
+    public void verifyUserIdThatIsNotExists() throws Exception{
+        assertNull(LoginVerifier.getData(-3));
     }
 
     private static String getAccessToken(String username, String password) throws Exception {
