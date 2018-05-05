@@ -5,18 +5,10 @@ import java.util.stream.Collectors;
 
 public class TranscriptsSummarizer {
 
-    private List<Transcript> transcripts;
+    private final List<Transcript> transcripts;
 
     public TranscriptsSummarizer(List<Transcript> transcripts) {
         this.transcripts = transcripts;
-    }
-
-    public boolean addTranscript(Transcript transcript) {
-        return transcripts.add(transcript);
-    }
-
-    public boolean removeTranscript(Transcript transcript) {
-        return transcripts.remove(transcript);
     }
 
     public String summarize() {
@@ -31,7 +23,8 @@ public class TranscriptsSummarizer {
 
         double totalScore = transcripts.stream()
                 .filter(t -> !t.getGrade().equals("N") && t.getCredit() > 0)
-                .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
+                .mapToDouble(t -> GradeMapper
+                        .getNumericGrade(t.getGrade())*t.getCredit())
                 .sum();
 
         summary += "\n\nTotal Credit : " + totalSks
