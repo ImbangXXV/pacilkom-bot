@@ -35,7 +35,7 @@ public class CSUIAccount extends CSUIWebService {
             params.put("format", "json");
 
             // Parse JSON to Map<String, Object>
-            String strResult = get(API_URL + "token/verify/", params);
+            String strResult = get(API_URL + "verify/", params);
             loginData = new JSONObject(strResult).toMap();
             loginData.put("access_token", accessToken);
         } catch (Exception e) {
