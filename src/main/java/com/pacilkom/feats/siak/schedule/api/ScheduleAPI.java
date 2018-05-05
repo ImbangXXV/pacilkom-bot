@@ -25,6 +25,7 @@ public class ScheduleAPI {
                     + "/" + term + "/" + translateDay(day)
                     + "/" + npm + "/?access_token=" + accessToken
                     + "&client_id=" + CSUI_CLIENT_ID + "&format=json");
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
