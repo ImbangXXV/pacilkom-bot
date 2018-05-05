@@ -1,6 +1,7 @@
 package com.pacilkom.feats.siak.schedule;
 
 import com.pacilkom.feats.siak.schedule.daily.DailyScheduleCommand;
+import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import org.junit.Test;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -10,8 +11,11 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class DailyScheduleCommandTest {
@@ -24,19 +28,29 @@ public class DailyScheduleCommandTest {
     }
 
     @Test
-    public void hasMessageIdReturnsEditMessageText() throws Exception {
-        BotApiMethod<? extends Serializable> response = instance.execute((long) -1, -1, -1, "");
+    public void hasMessageIdReturnsEditMessageText() {
+        // use verify because can't mock API response
+        Map<String, String> params = getDummyParams((long) -1, -1, "");
+        BotApiMethod<? extends Serializable> response = instance.getUniversalResponse(params);
         assertTrue(response instanceof EditMessageText);
-        response = instance.execute((long) -1, -1, -1, "2016");
+
+        params = getDummyParams((long) -1, -1, "2016");
+        response = instance.getYearResponse(params);
         assertTrue(response instanceof EditMessageText);
-        response = instance.execute((long) -1, -1, -1, "2016 1");
+
+        params = getDummyParams((long) -1, -1, "2016 1");
+        response = instance.getTermResponse(params);
         assertTrue(response instanceof EditMessageText);
-        response = instance.execute((long) -1, -1, -1, "2016 1 Monday");
+
+        params = getDummyParams((long) -1, -1, "2016 1 Monday");
+        DaySchedule schedule = new DaySchedule("Monday", "1", "2016",
+                "1606895606", new ArrayList<>());
+        response = instance.getDayResponse(params, schedule);
         assertTrue(response instanceof EditMessageText);
     }
 
     @Test
-    public void noMessageIdReturnsSendMessage() throws Exception {
+    public void noMessageIdReturnsSendMessage() {
         BotApiMethod<? extends Serializable> response = instance.execute((long) -1, -1, null, "");
         assertTrue(response instanceof SendMessage);
         response = instance.execute((long) -1, -1, null, "2016");
@@ -56,16 +70,16 @@ public class DailyScheduleCommandTest {
 
         InlineKeyboardMarkup markup = (InlineKeyboardMarkup) oriResponse.getReplyMarkup();
         InlineKeyboardButton firstKey = markup.getKeyboard().get(0).get(0);
-        assertEquals(firstKey.getText(), "2016");
-        assertEquals(firstKey.getCallbackData(), "/dailyschedule 2016");
+        assertEquals("2016", firstKey.getText());
+        assertEquals("/dailyschedule 2016", firstKey.getCallbackData());
     }
 
     @Test
     public void checkYearResponseIsCorrect() {
         Map<String, String> params = getDummyParams((long) -1, null, "2016");
         SendMessage oriResponse = (SendMessage) instance.getYearResponse(params);
-        assertEquals(oriResponse.getText(), "Okay... you choose academic year of 2016. "
-                + "Then you should choose the term now (1 = odd, 2 = even)");
+        assertEquals("Okay... you choose academic year of 2016. Then you should choose "
+                + "the term now (1 = odd, 2 = even)", oriResponse.getText());
 
         InlineKeyboardMarkup markup = (InlineKeyboardMarkup) oriResponse.getReplyMarkup();
         InlineKeyboardButton firstKey = markup.getKeyboard().get(0).get(0);
@@ -89,9 +103,12 @@ public class DailyScheduleCommandTest {
     @Test
     public void checkDayResponseIsCorrect() {
         Map<String, String> params = getDummyParams((long) -1, null, "2016 1 Monday");
-        SendMessage oriResponse = (SendMessage) instance.getTermResponse(params);
+        DaySchedule schedule = new DaySchedule("Monday", "1", "2016",
+                "1606895606", new ArrayList<>());
+
+        SendMessage oriResponse = (SendMessage) instance.getDayResponse(params, schedule);
         assertTrue(oriResponse.getText().contains("I get all the information I need.. "
-                + "Here are your schedule for Monday on academic year 2016 term 1:\n"));
+                + "Here are your schedule for Monday on academic year 2016 term 1:\n"), oriResponse.getText());
 
         InlineKeyboardMarkup markup = (InlineKeyboardMarkup) oriResponse.getReplyMarkup();
         InlineKeyboardButton firstKey = markup.getKeyboard().get(0).get(0);

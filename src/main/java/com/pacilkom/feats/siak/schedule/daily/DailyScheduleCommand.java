@@ -14,7 +14,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 import java.io.Serializable;
 import java.util.*;
 
-
 public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotCommand {
 
     private static final String ERROR_MESSAGE = "Daily schedule command's usage is:\n" +
@@ -60,7 +59,18 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
 
         // Determine the menu
         if (params.size() == 7) {
-            return getDayResponse(params);
+            // Get schedule from Fasilkom API
+            DaySchedule schedule = ScheduleAPI.getApiResponse(params.get("access_token"), params.get("npm"),
+                    params.get("year"), params.get("term"), params.get("day"));
+
+            // Check for API response failure, if success, then convert DaySchedule to String
+            if (schedule == null) {
+                return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
+                        "connection issues so I can't connect to Fasilkom UI API server :( " +
+                        "Please try again.");
+            } else {
+                return getDayResponse(params, schedule);
+            }
         } else if (params.size() == 6) {
             return getTermResponse(params);
         } else if (params.size() == 5) {
@@ -212,7 +222,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         buttons.getKeyboard().add(row3);
 
         // Make button for every days
-        String[] days = (String[]) ScheduleAPI.EN_ID_DAYS.keySet().toArray();
+        Object[] days = ScheduleAPI.EN_ID_DAYS.keySet().toArray();
         for (int i = 0; i < days.length; i++) {
             if (i % 2 == 0) {
                 curr = row1;
@@ -221,8 +231,8 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
             }
 
             curr.add(new InlineKeyboardButton()
-                    .setText(days[i]).setCallbackData("/dailyschedule " + params.get("year") + " "
-                            + params.get("term") + " " + days[i]));
+                    .setText((String) days[i]).setCallbackData("/dailyschedule "
+                            + params.get("year") + " " + params.get("term") + " " + days[i]));
         }
 
         row3.add(new InlineKeyboardButton().setText("<< Go Back")
@@ -236,23 +246,14 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
      * @param params = map that contains mandatory variables from text
      * @return SendMessage or EditMessageText
      */
-    public BotApiMethod<? extends Serializable> getDayResponse(Map<String, String> params) {
+    public BotApiMethod<? extends Serializable> getDayResponse(Map<String, String> params,
+                                                               DaySchedule schedule) {
         // Add intro message and initiate inline keyboard
         String message = "I get all the information I need.. Here are your schedule for "
                 + params.get("day") + " on academic year " + params.get("year") + " term "
                 + params.get("term") + ":\n";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
-        DaySchedule schedule = ScheduleAPI.getApiResponse(params.get("access_token"), params.get("npm"),
-                params.get("year"), params.get("term"), params.get("day"));
-
-        // Check for API response failure, if success, then convert DaySchedule to String
-        if (schedule == null) {
-            return new SendMessage(params.get("chat_id"), "I'm sorry, there are some weird " +
-                    "connection issues so I can't connect to Fasilkom UI API server :( " +
-                    "Please try again.");
-        } else {
-            message += schedule.toString();
-        }
+        message += schedule.toString();
 
         /// Initialize response method
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
