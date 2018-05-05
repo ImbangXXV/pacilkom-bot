@@ -1,7 +1,6 @@
 package com.pacilkom.feats.login;
 
 import com.pacilkom.csuilogin.DatabaseController;
-import com.pacilkom.csuilogin.SessionDatabase;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 
@@ -11,7 +10,7 @@ public class LogoutCommand implements AuthBotCommand {
     public SendMessage execute(Long chatId, Integer userId) {
         Map<String, Object> loginData = LoginVerifier.getData(userId);
 
-        if (loginData != null) {
+        if (loginData!=null) {
             try {
                 DatabaseController.deleteSession(userId);
             } catch (Exception e) {
