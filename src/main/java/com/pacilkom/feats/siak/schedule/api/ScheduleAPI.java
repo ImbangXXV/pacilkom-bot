@@ -4,6 +4,7 @@ import com.pacilkom.csui.CSUIAcademic;
 import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import com.pacilkom.feats.siak.schedule.objects.ScheduleItem;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -28,6 +29,10 @@ public class ScheduleAPI {
     }
 
     public static String translateDay(String dayName) {
-        return EN_ID_DAYS.getString(dayName);
+        try {
+            return EN_ID_DAYS.getString(dayName);
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }
