@@ -1,6 +1,6 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csui.CSUILogin;
+import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.csuilogin.DatabaseController;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class LoginVerifierTest {
 
     @Before
     public void setUp() throws Exception {
-        accessToken = CSUILogin.getAccessToken("muhammad.imbang", "aliceinwonderland25");
+        accessToken = CSUIAccount.getAccessToken("muhammad.imbang", "aliceinwonderland25");
         // Create session with valid accessToken
         DatabaseController.createSession(-1,accessToken);
         // Create session with invalid accessToken
@@ -26,7 +26,7 @@ public class LoginVerifierTest {
 
     @Test
     public void verifyUserIdThatAlreadyExistsWithValidAccessToken() throws Exception{
-        Map<String, Object> loginData = LoginVerifier.getData(-1);
+        Map<String, Object> loginData = CSUIAccount.verifyLogin(-1);
         assertEquals(loginData.get("access_token"), accessToken);
         assertEquals(loginData.get("role"), "mahasiswa");
         assertEquals(loginData.get("identity_number"), "1606889502");
@@ -35,12 +35,12 @@ public class LoginVerifierTest {
 
     @Test
     public void verifyUserIdThatAlreadyExistsWithInvalidAccessToken() throws Exception{
-        assertNull(LoginVerifier.getData(-2));
+        assertNull(CSUIAccount.verifyLogin(-2));
     }
 
     @Test
     public void verifyUserIdThatIsNotExists() throws Exception{
-        assertNull(LoginVerifier.getData(-3));
+        assertNull(CSUIAccount.verifyLogin(-3));
     }
 
     @After

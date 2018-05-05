@@ -1,6 +1,6 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csui.CSUILogin;
+import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.csuilogin.DatabaseController;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +17,7 @@ public class LoginCommandTest {
 
     @Before
     public void setUp() throws Exception{
-        String accessToken = CSUILogin.getAccessToken("muhammad.imbang", "aliceinwonderland25");
+        String accessToken = CSUIAccount.getAccessToken("muhammad.imbang", "aliceinwonderland25");
         DatabaseController.createSession(-1, accessToken);
         DatabaseController.createSession(-2, "1234");
         testCommand = new LoginCommand();
