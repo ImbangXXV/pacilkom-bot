@@ -1,4 +1,4 @@
-package com.pacilkom.feats.login;
+package com.pacilkom.csuilogin;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -8,12 +8,13 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.pacilkom.bot.PacilkomBot;
+import com.pacilkom.csui.CSUIWebService;
 import org.apache.commons.codec.binary.Hex;
 
 public class Encryptor {
     public static String encrypt(String value) {
         try {
-            String hash = getKeyHash(PacilkomBot.API_KEY, PacilkomBot.CSUI_CLIENT_ID);
+            String hash = getKeyHash(PacilkomBot.API_KEY, CSUIWebService.CSUI_CLIENT_ID);
             IvParameterSpec iv = new IvParameterSpec(hash.substring(0, 16).getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(hash.substring(0, 16).getBytes("UTF-8"), "AES");
 
@@ -32,7 +33,7 @@ public class Encryptor {
 
     public static String decrypt(String encrypted) {
         try {
-            String hash = getKeyHash(PacilkomBot.API_KEY, PacilkomBot.CSUI_CLIENT_ID);
+            String hash = getKeyHash(PacilkomBot.API_KEY, CSUIWebService.CSUI_CLIENT_ID);
             IvParameterSpec iv = new IvParameterSpec(hash.substring(0, 16).getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(hash.substring(0, 16).getBytes("UTF-8"), "AES");
 

@@ -1,8 +1,8 @@
 package com.pacilkom.feats.siak.schedule.daily;
 
+import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
-import com.pacilkom.feats.login.LoginVerifier;
 import com.pacilkom.feats.siak.schedule.api.ScheduleAPI;
 import com.pacilkom.feats.siak.schedule.objects.DaySchedule;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -44,7 +44,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
     public BotApiMethod<? extends Serializable> execute(Long chatId, Integer userId,
                                                         Integer messageId, String text) {
         // Check login fist
-        Map<String, Object> loginData = LoginVerifier.getData(userId);
+        Map<String, Object> loginData = CSUIAccount.verifyLogin(userId);
         if (loginData == null) {
             return new SendMessage(chatId, "Please login first to CSUI account " +
                     "using /login command");
