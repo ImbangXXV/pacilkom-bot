@@ -1,12 +1,10 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csui.CSUIAccount;
+import com.pacilkom.csui.CSUILogin;
 import com.pacilkom.csuilogin.DatabaseController;
 import org.junit.Test;
 import org.junit.Before;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -18,7 +16,7 @@ public class LogoutCommandTest {
 
     @Before
     public void setUp() throws Exception {
-        accessToken = CSUIAccount.getAccessToken("muhammad.imbang", "aliceinwonderland25");
+        accessToken = CSUILogin.getAccessToken("muhammad.imbang", "aliceinwonderland25");
         DatabaseController.createSession(999, accessToken);
         testCommand = new LogoutCommand();
     }

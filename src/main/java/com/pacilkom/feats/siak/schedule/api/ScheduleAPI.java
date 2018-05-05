@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import static com.pacilkom.bot.PacilkomBot.CSUI_CLIENT_ID;
+import static com.pacilkom.csui.CSUIWebService.CSUI_CLIENT_ID;
 
 public class ScheduleAPI {
     public static final JSONObject EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","

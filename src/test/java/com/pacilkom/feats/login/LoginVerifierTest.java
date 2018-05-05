@@ -1,6 +1,6 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csui.CSUIAccount;
+import com.pacilkom.csui.CSUILogin;
 import com.pacilkom.csuilogin.DatabaseController;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class LoginVerifierTest {
 
     @Before
     public void setUp() throws Exception {
-        accessToken = CSUIAccount.getAccessToken("muhammad.imbang", "aliceinwonderland25");
+        accessToken = CSUILogin.getAccessToken("muhammad.imbang", "aliceinwonderland25");
         // Create session with valid accessToken
         DatabaseController.createSession(-1,accessToken);
         // Create session with invalid accessToken

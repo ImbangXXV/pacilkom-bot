@@ -1,6 +1,6 @@
 package com.pacilkom.bot.controller;
 
-import com.pacilkom.csui.CSUIAccount;
+import com.pacilkom.csui.CSUILogin;
 import com.pacilkom.csuilogin.DatabaseController;
 import com.pacilkom.csuilogin.Encryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class LoginController {
         int user_id = Integer.parseInt(Encryptor.decrypt(enc_user_id));
         try {
             model.addAttribute("id", user_id);
-            access_token = CSUIAccount.getAccessToken(username, password);
+            access_token = CSUILogin.getAccessToken(username, password);
             if (access_token != null) {
                 DatabaseController.createSession(user_id, access_token);
                 model.addAttribute("success", true);

@@ -1,6 +1,6 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csui.CSUIAccount;
+import com.pacilkom.csui.CSUILogin;
 import com.pacilkom.csuilogin.DatabaseController;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ public class LoginVerifier {
         String result = "";
         try {
             String accessToken = DatabaseController.getAccessToken(userId);
-            return CSUIAccount.verifyAccessToken(accessToken);
+            return CSUILogin.verifyAccessToken(accessToken);
         } catch (Exception e) {
             return null;
         }
