@@ -1,5 +1,6 @@
 package com.pacilkom.feats.login;
 
+import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.csuilogin.Encryptor;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class LoginCommand implements AuthBotCommand {
     public SendMessage execute(Long chatId, Integer userId) {
         SendMessage message;
-        Map<String, Object> loginData = LoginVerifier.getData(userId);
+        Map<String, Object> loginData = CSUIAccount.verifyLogin(userId);
 
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
