@@ -95,15 +95,11 @@ public class Transcript {
         int credit = subjectInfo == null ? 0 :
                 subjectInfo.getInt("jml_sks");
         String lectName = "";
-        if (lecturer == null) {
-            lectName = "Unidentified";
-        } else {
-            for (int i = 0;i < lecturer.length();i++) {
-                JSONObject lect = lecturer.getJSONObject(i);
-                lectName += lect.isNull("nama") ? "Unidentified"
-                        : lect.getString("nama");
-                lectName += i < lecturer.length() -1 ? ", " : "";
-            }
+        for (int i = 0;i < lecturer.length();i++) {
+            JSONObject lect = lecturer.getJSONObject(i);
+            lectName += lect.isNull("nama") ? "Unidentified"
+                    : lect.getString("nama");
+            lectName += i < lecturer.length() -1 ? ", " : "";
         }
 
         return new Transcript(collClass.getInt("kd_kls"),
