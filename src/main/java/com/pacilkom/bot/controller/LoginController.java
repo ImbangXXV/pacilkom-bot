@@ -28,7 +28,7 @@ public class LoginController {
         String access_token;
         int user_id = Integer.parseInt(Encryptor.decrypt(enc_user_id));
         try {
-            model.addAttribute("id", user_id);
+            model.addAttribute("id", enc_user_id);
             access_token = CSUILogin.getAccessToken(username, password);
             if (access_token != null) {
                 DatabaseController.createSession(user_id, access_token);
