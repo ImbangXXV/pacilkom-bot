@@ -10,7 +10,6 @@ public class PacilkomBot extends TelegramWebhookBot {
     public static final String API_KEY = System.getenv("BOT_API_KEY_1") + ":"
             + System.getenv("BOT_API_KEY_2");
     public static final String PATH = System.getenv("BOT_WEBHOOK_PATH");
-    public static final String CSUI_CLIENT_ID = System.getenv("CSUI_CLIENT_ID");
     public static final String DATABASE_URL = System.getenv("DATABASE_URL")
             + "?sslmode=require&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 

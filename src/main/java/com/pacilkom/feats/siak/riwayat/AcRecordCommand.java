@@ -1,8 +1,8 @@
 package com.pacilkom.feats.siak.riwayat;
 
+import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
-import com.pacilkom.feats.login.LoginVerifier;
 import com.pacilkom.feats.siak.riwayat.api.AcademicRecord;
 import com.pacilkom.feats.siak.riwayat.api.ProgramInfo;
 import com.pacilkom.feats.siak.riwayat.comp.GradeMapper;
@@ -34,7 +34,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
     public BotApiMethod<? extends Serializable> execute(Long chatId,
                                                         Integer userId, Integer messageId,
                                                         String text) throws Exception {
-        Map<String, Object> loginData = LoginVerifier.getData(userId);
+        Map<String, Object> loginData = CSUIAccount.verifyLogin(userId);
         if (loginData == null) {
             return new SendMessage(chatId, "Please login first to CSUI account " +
                     "using /login command");

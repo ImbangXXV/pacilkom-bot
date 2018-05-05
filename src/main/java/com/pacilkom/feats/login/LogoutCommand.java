@@ -1,6 +1,7 @@
 package com.pacilkom.feats.login;
 
-import com.pacilkom.csuilogin.SessionDatabase;
+import com.pacilkom.csui.CSUIAccount;
+import com.pacilkom.csuilogin.DatabaseController;
 import com.pacilkom.feats.interfaces.AuthBotCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 
@@ -8,11 +9,11 @@ import java.util.Map;
 
 public class LogoutCommand implements AuthBotCommand {
     public SendMessage execute(Long chatId, Integer userId) {
-        Map<String, Object> loginData = LoginVerifier.getData(userId);
+        Map<String, Object> loginData = CSUIAccount.verifyLogin(userId);
 
-        if (loginData != null) {
+        if (loginData!=null) {
             try {
-                SessionDatabase.getInstance().deleteSession(userId);
+                DatabaseController.deleteSession(userId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
