@@ -111,5 +111,20 @@ public class Transcript {
                 lectName, credit, json.getInt("tahun"),
                 json.getInt("term"), json.getString("nilai"));
     }
-}
 
+    public String review() {
+        String report = "Alright, this is the report of " + getSubject()
+                + " course";
+        report += toString();
+
+        if (report.contains("Unidentified")) {
+            report += "We're sorry that some data are missing... That's all "
+                    + "we got from our source...";
+        } else {
+            report += "Alright, that should be all.";
+        }
+
+        return report;
+
+    }
+}

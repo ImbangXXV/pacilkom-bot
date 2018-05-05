@@ -5,8 +5,8 @@ import com.pacilkom.feats.interfaces.AuthEditableBotCommand;
 import com.pacilkom.feats.login.LoginVerifier;
 import com.pacilkom.feats.siak.riwayat.api.AcademicRecord;
 import com.pacilkom.feats.siak.riwayat.api.ProgramInfo;
-import com.pacilkom.feats.siak.riwayat.comp.GradeMapper;
 import com.pacilkom.feats.siak.riwayat.comp.Transcript;
+import com.pacilkom.feats.siak.riwayat.comp.TranscriptsSummarizer;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
@@ -15,7 +15,12 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
@@ -45,7 +50,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         params.put("message_id", messageId == null ? null : messageId.toString());
         params.put("user_id", String.valueOf(userId));
 
-        switch(params.size()) {
+        switch (params.size()) {
             case 6:
                 if (params.get("id").equals("sum")) {
                     return summarize(params);
@@ -62,7 +67,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return new SendMessage(chatId, ERROR_MESSAGE);
     }
 
-    private Map<String, String> parseParameter(String text) {
+    public Map<String, String> parseParameter(String text) {
         Map<String, String> result = new HashMap<>();
 
         if (text == null || text.isEmpty()) {
@@ -85,7 +90,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return result;
     }
 
-    private BotApiMethod<? extends Serializable> yearResponse(Map<String, String> params) {
+    public BotApiMethod<? extends Serializable> yearResponse(Map<String, String> params) {
         String message = "Alright, Please choose which year of academic"
                 + " record you'd like to see.. ";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
@@ -124,9 +129,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> termResponse(Map<String, String> params) {
-        String message = "Now that you chose the year of " + params.get("year") +
-                ", you should choose which term now (1 = odd, 2 = even, 3 = short)";
+    public BotApiMethod<? extends Serializable> termResponse(Map<String, String> params) {
+        String message = "Now that you chose the year of " + params.get("year")
+                + ", you should choose which term now (1 = odd, 2 = even, 3 = short)";
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
@@ -144,7 +149,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         if (termYear < currYear - 1 || month > 7) {
             row.add(new InlineKeyboardButton().setText("2")
                     .setCallbackData("/record " + params.get("year") + " 2"));
-        } if (termYear < currYear - 1 || month > 9) {
+        }
+        if (termYear < currYear - 1 || month > 9) {
             row.add(new InlineKeyboardButton().setText("3")
                     .setCallbackData("/record " + params.get("year") + " 3"));
         }
@@ -153,7 +159,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> courseResponse(Map<String,
+    public BotApiMethod<? extends Serializable> courseResponse(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
@@ -172,6 +178,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                     + " term " + params.get("term") + ". Now, you can either choose "
                     + " the specific course you'd like to see or just summarize the entire"
                     + " semester by choosing Summarize button.";
+
             for (Transcript script : transcripts) {
                 row = new ArrayList<>();
                 row.add(new InlineKeyboardButton().setText(script.getSubject())
@@ -202,21 +209,14 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> inform(Map<String,
+    public BotApiMethod<? extends Serializable> inform(Map<String,
             String> params) throws IOException {
         int courseId = Integer.parseInt(params.get("id"));
         int userId = Integer.parseInt(params.get("user_id"));
         Transcript transcript = AcademicRecord.getAllTranscript(userId)
                 .stream().filter(t -> t.getId() == courseId).findAny().get();
 
-        String message = "This is it! There record of the course you've"
-                + " been waiting for!\n\n";
-
-        message += transcript.toString();
-
-        message += "\n\nWell there might be some missing information..."
-                    + "\nProbably because our resource's restriction or "
-                    + "data unavailability";
+        String message = transcript.review();
 
         InlineKeyboardMarkup buttons = createKeyboardInstance();
 
@@ -235,7 +235,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
     }
 
-    private BotApiMethod<? extends Serializable> summarize(Map<String,
+    public BotApiMethod<? extends Serializable> summarize(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
@@ -248,27 +248,11 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
                 .stream().filter(t -> t.getTerm() == term && t.getYear() == year)
                 .collect(Collectors.toList());
 
-        if (transcripts.size() > 0) {
-            message += "Course(s) taken (credit unit(s)) :\n";
-            message += transcripts.stream().map(t ->
-                    String.format("%s (%d)",t.getSubject(), t.getCredit()))
-                    .collect(Collectors.joining("\n"));
-            int totalSks = transcripts.stream()
-                    .mapToInt(Transcript::getCredit).sum();
-            double totalScore = transcripts.stream()
-                    .filter(t -> !t.getGrade().equals("N") && t.getCredit() > 0)
-                    .mapToDouble(t -> GradeMapper.getNumericGrade(t.getGrade())*t.getCredit())
-                    .sum();
-            message += "\n\nTotal Credit : " + totalSks
-                    + String.format("\nYour IP : %.2f", (totalScore / totalSks));
+        TranscriptsSummarizer summarizer = new TranscriptsSummarizer(transcripts);
+        message += summarizer.summarize();
 
-        } else {
-            message += "\nIt seems you have no record on academic year " + year
-                    + " term " + term + "...";
-        }
-
-        message += "\n\nPlease note that some of the subjects are not included"
-                    + " due to incomplete information.";
+        message += "\n\nPlease note that some of the subjects may not be included"
+                + " due to incomplete information.";
 
 
         BotApiMethod<? extends Serializable> response = createMethodInstance(params,
