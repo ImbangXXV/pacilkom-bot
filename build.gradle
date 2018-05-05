@@ -63,7 +63,6 @@ dependencies {
     provided group: "org.springframework.boot", name: "spring-boot-autoconfigure-processor", version: "2.0.1.RELEASE"
     provided group: "postgresql", name: "postgresql", version: "9.1-901.jdbc4"
 
-
     implementation group: "org.telegram", name: "telegrambots", version: "3.6.1"
     implementation group: "org.jsoup", name: "jsoup", version: "1.11.3"
     implementation group: "org.json", name: "json", version: "20180130"

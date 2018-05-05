@@ -28,12 +28,8 @@ public class DailyScheduleCommandTest {
     @Test
     public void hasMessageIdReturnsEditMessageText() {
         // use verify because can't mock API response
-        Map<String, String> params = getDummyParams((long) -1, -1, "", "14");
-        BotApiMethod<? extends Serializable> response = instance.getUniversalResponse(params);
-        assertTrue(response instanceof EditMessageText);
-
-        params = getDummyParams((long) -1, -1, "2014", "14");
-        response = instance.getYearResponse(params);
+        Map<String, String> params = getDummyParams((long) -1, -1, "2014", "14");
+        BotApiMethod<? extends Serializable> response = instance.getYearResponse(params);
         assertTrue(response instanceof EditMessageText);
 
         params = getDummyParams((long) -1, -1, "2014 1", "14");

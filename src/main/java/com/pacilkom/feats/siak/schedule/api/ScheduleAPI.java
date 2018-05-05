@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ScheduleAPI {
-    public static final JSONObject EN_ID_DAYS = new JSONObject("{\"Monday\":\"Senin\","
+    public static final JSONObject DAYS = new JSONObject("{\"Monday\":\"Senin\","
             + "\"Tuesday\":\"Selasa\",\"Wednesday\":\"Rabu\",\"Thursday\":\"Kamis\","
             + "\"Friday\":\"Jumat\",\"Saturday\":\"Sabtu\"}");
 
@@ -30,7 +30,7 @@ public class ScheduleAPI {
 
     public static String translateDay(String dayName) {
         try {
-            return EN_ID_DAYS.getString(dayName);
+            return DAYS.getString(dayName);
         } catch (JSONException e) {
             return null;
         }
