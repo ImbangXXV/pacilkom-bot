@@ -11,6 +11,8 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.io.Serializable;
 import java.util.ArrayList;
