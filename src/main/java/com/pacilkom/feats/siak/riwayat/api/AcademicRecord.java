@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AcademicRecord {
-    public static List<Transcript> getAllTranscript(Integer userId) throws Exception {
+    public static List<Transcript> getAllTranscript(Integer userId) throws IOException {
         List<Transcript> transcripts = new LinkedList<>();
         JSONArray json = CSUIAcademic.getAcademicTranscript(userId);
         for (int i = 0; i < json.length(); i++) {
