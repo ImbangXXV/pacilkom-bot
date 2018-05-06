@@ -17,7 +17,9 @@ public class HelpCommand implements BotCommand {
                 "6. /time = Shows current time according to Fasilkom UI server time.\n\n" +
                 "Commands with CSUI Account Authentication: (you must login first " +
                 "to use these features)\n" +
-                "7. Coming soon\n" +
+                "7. /record = Shows your academic record in CSUI Faculty. There 3 features " +
+                "on record, you can either see the specific course, summarizeIp record on" +
+                " a semester, or just summarizeIp all the courses you've taken so far (IPK)\n" +
                 "8. Coming soon\n" +
                 "9. Coming soon\n" +
                 "10. Coming soon\n");

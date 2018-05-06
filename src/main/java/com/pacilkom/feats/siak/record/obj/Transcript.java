@@ -1,9 +1,9 @@
-package com.pacilkom.feats.siak.riwayat.comp;
+package com.pacilkom.feats.siak.record.obj;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Transcript {
+public class Transcript implements Summarizable {
     private int id;
     private String subject;
     private String lecturer;
@@ -95,15 +95,11 @@ public class Transcript {
         int credit = subjectInfo == null ? 0 :
                 subjectInfo.getInt("jml_sks");
         String lectName = "";
-        if (lecturer == null) {
-            lectName = "Unidentified";
-        } else {
-            for (int i = 0;i < lecturer.length();i++) {
-                JSONObject lect = lecturer.getJSONObject(i);
-                lectName += lect.isNull("nama") ? "Unidentified"
-                        : lect.getString("nama");
-                lectName += i < lecturer.length() -1 ? ", " : "";
-            }
+        for (int i = 0;i < lecturer.length();i++) {
+            JSONObject lect = lecturer.getJSONObject(i);
+            lectName += lect.isNull("nama") ? "Unidentified"
+                    : lect.getString("nama");
+            lectName += i < lecturer.length() -1 ? ", " : "";
         }
 
         return new Transcript(collClass.getInt("kd_kls"),
@@ -111,5 +107,20 @@ public class Transcript {
                 lectName, credit, json.getInt("tahun"),
                 json.getInt("term"), json.getString("nilai"));
     }
-}
 
+    public String summarize() {
+        String report = "Alright, this is the report of " + getSubject()
+                + " course";
+        report += toString();
+
+        if (report.contains("Unidentified")) {
+            report += "We're sorry that some data are missing... That's all "
+                    + "we got from our source...";
+        } else {
+            report += "Alright, that should be all.";
+        }
+
+        return report;
+
+    }
+}

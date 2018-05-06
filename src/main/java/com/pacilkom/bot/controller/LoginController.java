@@ -6,6 +6,7 @@ import com.pacilkom.csuilogin.Encryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.springframework.ui.Model;
 
@@ -33,6 +34,8 @@ public class LoginController {
             if (access_token != null) {
                 DatabaseController.createSession(user_id, access_token);
                 model.addAttribute("success", true);
+                bot.execute(new SendMessage((long) user_id, "You have successfully logged in "
+                        + "using CSUI account."));
                 return "login-confirm";
             }
         } catch (Exception e) {

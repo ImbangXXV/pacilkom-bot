@@ -1,4 +1,4 @@
-package com.pacilkom.feats.siak.riwayat.api;
+package com.pacilkom.feats.siak.record.api;
 
 import com.pacilkom.csui.CSUIAcademic;
 

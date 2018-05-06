@@ -22,8 +22,8 @@ public class LoginCommand implements AuthBotCommand {
 
         if (loginData != null) {
             message = new SendMessage(chatId,
-                    "Kamu sudah login dengan akun CSUI: " + loginData.get("username")
-                            + " dengan role " + loginData.get("role"));
+                    "You have logged in via CSUI account as: " + loginData.get("username")
+                            + " with role " + loginData.get("role"));
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
                     .setText("Switch Account")
@@ -35,8 +35,8 @@ public class LoginCommand implements AuthBotCommand {
 
         } else {
             message = new SendMessage(chatId,
-                    "Kamu belum login dengan akun CSUI. Silahkan login melalui tombol "
-                            + "login berikut!");
+                    "You haven't logged in via CSUI account yet. Use this button below to "
+                            + "unlock CSUI-exclusive features.");
             // Add inline keyboard button(s)
             rowInline.add(new InlineKeyboardButton()
                     .setText("Login with CSUI account")
