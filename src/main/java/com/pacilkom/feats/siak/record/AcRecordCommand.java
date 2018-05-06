@@ -61,6 +61,9 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
             case 5:
                 return courseResponse(params);
             case 4:
+                if (params.get("year").equals("ipk")) {
+                    return summarizeIpk(params);
+                }
                 return termResponse(params);
             case 3:
                 return yearResponse(params);
@@ -168,7 +171,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    public BotApiMethod<? extends Serializable> courseResponse(Map<String,
+    private BotApiMethod<? extends Serializable> courseResponse(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
@@ -185,9 +188,8 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         if (transcripts.size() > 0) {
             message += "Kay, you chose the year of " + params.get("year")
                     + " term " + params.get("term") + ". Now, you can either choose "
-                    + " the specific course you'd like to see or just summarizeIp the entire"
+                    + " the specific course you'd like to see or just summarize the entire"
                     + " semester by choosing Summarize button.";
-
             for (Transcript script : transcripts) {
                 row = new ArrayList<>();
                 row.add(new InlineKeyboardButton().setText(script.getSubject())
@@ -217,6 +219,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
 
         return response;
     }
+
 
     public BotApiMethod<? extends Serializable> inform(Map<String,
             String> params) throws IOException {
