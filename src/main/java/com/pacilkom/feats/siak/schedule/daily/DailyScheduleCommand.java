@@ -222,7 +222,7 @@ public class DailyScheduleCommand implements AuthEditableBotCommand, AuthBotComm
         buttons.getKeyboard().add(row3);
 
         // Make button for every days
-        Object[] days = ScheduleAPI.EN_ID_DAYS.keySet().toArray();
+        String[] days = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
         for (int i = 0; i < days.length; i++) {
             if (i % 2 == 0) {
                 curr = row1;
