@@ -2,14 +2,16 @@ package com.pacilkom.feats.login;
 
 import com.pacilkom.csui.CSUIAccount;
 import com.pacilkom.csuilogin.DatabaseController;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
+
 import java.sql.SQLException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 public class LoginVerifierTest {
 

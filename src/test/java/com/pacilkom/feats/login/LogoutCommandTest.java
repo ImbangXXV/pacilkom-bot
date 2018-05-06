@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class LogoutCommandTest {
 
