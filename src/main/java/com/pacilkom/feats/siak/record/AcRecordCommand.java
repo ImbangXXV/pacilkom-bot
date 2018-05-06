@@ -61,9 +61,6 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
             case 5:
                 return courseResponse(params);
             case 4:
-                if (params.get("year").equals("ipk")) {
-                    return summarizeIpk(params);
-                }
                 return termResponse(params);
             case 3:
                 return yearResponse(params);
