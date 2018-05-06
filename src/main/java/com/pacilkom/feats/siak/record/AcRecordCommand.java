@@ -171,7 +171,7 @@ public class AcRecordCommand implements AuthBotCommand, AuthEditableBotCommand {
         return response;
     }
 
-    private BotApiMethod<? extends Serializable> courseResponse(Map<String,
+    public BotApiMethod<? extends Serializable> courseResponse(Map<String,
             String> params) throws IOException {
         int year = Integer.parseInt(params.get("year"));
         int term = Integer.parseInt(params.get("term"));
