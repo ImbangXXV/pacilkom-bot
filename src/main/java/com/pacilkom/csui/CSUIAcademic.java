@@ -19,7 +19,7 @@ public class CSUIAcademic extends CSUIWebService {
 
     public static JSONArray getAcademicTranscript(int userId) throws IOException {
             Map<String, Object> data = CSUIAccount.verifyLogin(userId);
-            String resp = get(API_URL + "mahasiswa/" + data.get("identity_number") + "/riwayat/",
+            String resp = get(API_URL + "mahasiswa/" + data.get("identity_number") + "/record/",
                     createParamsMap((String) data.get("access_token")));
             return new JSONArray(resp);
     }

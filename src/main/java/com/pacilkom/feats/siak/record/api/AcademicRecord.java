@@ -1,7 +1,7 @@
-package com.pacilkom.feats.siak.riwayat.api;
+package com.pacilkom.feats.siak.record.api;
 
 import com.pacilkom.csui.CSUIAcademic;
-import com.pacilkom.feats.siak.riwayat.comp.Transcript;
+import com.pacilkom.feats.siak.record.obj.Transcript;
 
 import java.io.IOException;
 import java.util.LinkedList;
