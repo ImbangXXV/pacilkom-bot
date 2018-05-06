@@ -12,7 +12,7 @@ public class CSUIAcademic extends CSUIWebService {
 
     public static JSONObject getBasicAcademicData(Integer userId) throws IOException {
         Map<String, Object> data = CSUIAccount.verifyLogin(userId);
-        String resp = post(API_URL + "mahasiswa/cari-info-program/" + data.get("identity_number"),
+        String resp = get(API_URL + "mahasiswa/cari-info-program/" + data.get("identity_number"),
                 createParamsMap((String) data.get("access_token")));
         return new JSONObject(resp);
     }
